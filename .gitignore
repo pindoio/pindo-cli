@@ -1,6 +1,9 @@
 
 *.DS_Store
 
+.cache/v/cache
+.vscode
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
