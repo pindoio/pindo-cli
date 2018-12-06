@@ -21,7 +21,8 @@ class Token:
             self.url, auth=HTTPBasicAuth(self.username, self.password))
         if r.status_code == 200:
             return '{}'.format(r.json()['token'])
-        raise PindoClientException('Pindo API authentication failed.')
+        return '{}'.format(r.status_code)
+        #raise PindoClientException('Pindo API authentication failed.')
 
 
 class Register:
