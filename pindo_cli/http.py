@@ -1,8 +1,5 @@
-import json
-
 import requests
 from requests.auth import HTTPBasicAuth
-
 
 
 class PindoClientException(Exception):
@@ -19,7 +16,7 @@ class Token:
         self.url = 'http://188.166.168.177/users/token'
 
     def __str__(self):
-        # request 
+        # request
         r = requests.get(
             self.url, auth=HTTPBasicAuth(self.username, self.password))
         if r.status_code == 200:
@@ -43,7 +40,6 @@ class Register:
             'email': self.email,
             'password': self.password
         }
-        
         r = requests.post(self.url, json=payload)
         if r.status_code == 201:
             return ' Account successfully created'
