@@ -2,7 +2,7 @@ import click
 import click_spinner
 import time
 
-from http import Token, Register
+from pindo_cli.http import Token, Register
 
 
 @click.command()

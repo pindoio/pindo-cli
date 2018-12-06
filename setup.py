@@ -22,7 +22,7 @@ setup(
     py_modules=['pindo_cli'],
     install_requires=[
         'Click==7.0',
-        'requests==2.4.2',
+        'requests==2.20.0',
         'pytest-cov==2.6.0',
         'click-spinner==0.1.8',
     ],
