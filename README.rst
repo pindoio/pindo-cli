@@ -1,6 +1,7 @@
-# pindo-cli
-[![Build Status](https://travis-ci.org/pindo-io/pindo-cli.svg?branch=master)](https://travis-ci.org/pindo-io/pindo-cli)
-A simple command line interface for requesting token and test SMS. 
+pindo-cli
+=========
+.. image:: https://travis-ci.org/pindo-io/pindo-cli.svg?branch=master
+    :target: https://travis-ci.org/pindo-io/pindo-cli
 
 Installation
 ------------
@@ -38,7 +39,7 @@ Once you're have install `Pindo CLI` you're ready to go.
 ::
 
 Create an account
-~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 For creating a `Pindo` account you need to provide your `username`, `email`, 
 and `password`
