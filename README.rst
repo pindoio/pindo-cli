@@ -2,6 +2,8 @@ pindo-cli
 =========
 .. image:: https://travis-ci.org/pindo-io/pindo-cli.svg?branch=master
     :target: https://travis-ci.org/pindo-io/pindo-cli
+    
+A simple command line interface for requesting token and test SMS. 
 
 Installation
 ------------
