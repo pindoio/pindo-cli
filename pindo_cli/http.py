@@ -17,12 +17,12 @@ class Token:
 
     def __str__(self):
         # request
-        r = requests.get(
-            self.url, auth=HTTPBasicAuth(self.username, self.password))
-        if r.status_code == 200:
-            return '{}'.format(r.json()['token'])
-        return '{}'.format(r.status_code)
-        #raise PindoClientException('Pindo API authentication failed.')
+        try:
+            r = requests.get(
+                self.url, auth=HTTPBasicAuth(self.username, self.password))
+            return '{}'.format(r.json())
+        except:
+            return 'Something went wrong try again.'
 
 
 class Register:
@@ -42,6 +42,31 @@ class Register:
             'password': self.password
         }
         r = requests.post(self.url, json=payload)
-        if r.status_code == 201:
-            return ' Account successfully created'
-        raise PindoClientException('Pindo API registration failed.')
+        return '{}'.format(r.json())
+
+
+class SMS:
+    """
+        Send a test Message
+    """
+
+    def __init__(self, token, to, text, sender):
+        self.token = token
+        self.to = to
+        self.text = text 
+        self.sender = sender
+        self.url = 'http://188.166.168.177/sms/'
+
+    def __str__(self):
+        payload = {
+            'to': self.to,
+            'text': self.text,
+            'sender': self.sender
+        }
+        r = requests.post(
+            self.url,
+            auth=HTTPBasicAuth(self.token, ''),
+            json=payload
+        )
+        return '{}'.format(r.json())
+
