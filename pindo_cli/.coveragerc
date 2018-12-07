@@ -1,0 +1,3 @@
+[run]
+include = */pindo_cli/*
+omit = */test_*.py
