@@ -6,14 +6,18 @@ class PindoClientException(Exception):
     pass
 
 
-class Token:
+class Config:
+    BASE_URL = 'http://http://188.166.168.177'
+
+
+class Token(Config):
     """
     Request a Pindo Token
     """
     def __init__(self, username, password):
         self.username = username
         self.password = password
-        self.url = 'http://188.166.168.177/users/token'
+        self.url = '{}/users/token'.format(Config.BASE_URL)
 
     def __str__(self):
         # request
@@ -25,7 +29,7 @@ class Token:
             return 'Something went wrong try again.'
 
 
-class Register:
+class Register(Config):
     """
     Register a new account
     """
@@ -33,7 +37,7 @@ class Register:
         self.username = username
         self.email = email
         self.password = password
-        self.url = 'http://188.166.168.177/users/registration'
+        self.url = '{}/users/registration'.format(Config.BASE_URL)
 
     def __str__(self):
         payload = {
@@ -45,7 +49,7 @@ class Register:
         return '{}'.format(r.json())
 
 
-class SMS:
+class SMS(Config):
     """
         Send a test Message
     """
@@ -55,7 +59,7 @@ class SMS:
         self.to = to
         self.text = text 
         self.sender = sender
-        self.url = 'http://188.166.168.177/sms/'
+        self.url = '{}/sms/'.format(Config.BASE_URL)
 
     def __str__(self):
         payload = {
