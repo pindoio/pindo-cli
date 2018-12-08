@@ -14,7 +14,7 @@ Python.
 
 ::
 
-   pip install pindo-cli
+   pip3 install pindo-cli
 
 Don't have pip installed? Try installing it, by running this from the
 command line:
