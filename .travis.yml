@@ -4,8 +4,7 @@ python:
 install:
 - pip install .
 script:
-- py.test -v --cov-report=term-missing --cov-config .coveragerc --flake8 --cov=pindo_cli
-  pindo_cli/tests
+- py.test -v --cov-report=term-missing --cov-config .coveragerc --flake8 --cov=pindo_cli pindo_cli/tests
 deploy:
   provider: pypi
   user: pindo
