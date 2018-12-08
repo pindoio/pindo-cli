@@ -2,6 +2,8 @@ pindo-cli
 =========
 .. image:: https://travis-ci.org/pindo-io/pindo-cli.svg?branch=master
     :target: https://travis-ci.org/pindo-io/pindo-cli
+.. image:: https://badge.fury.io/py/pindo-cli.svg
+    :target: https://badge.fury.io/py/pindo-cli.svg
 .. image:: https://pypip.in/d/pindo-cli/badge.png
     :target: https://crate.io/packages/pindo-cli/
 
