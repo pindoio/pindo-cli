@@ -7,7 +7,7 @@ class PindoClientException(Exception):
 
 
 class Config:
-    BASE_URL = 'http://http://188.166.168.177'
+    BASE_URL = 'http://178.128.165.87'
 
 
 class Token(Config):
@@ -21,12 +21,9 @@ class Token(Config):
 
     def __str__(self):
         # request
-        try:
-            r = requests.get(
-                self.url, auth=HTTPBasicAuth(self.username, self.password))
-            return '{}'.format(r.json())
-        except:
-            return 'Something went wrong try again.'
+        r = requests.get(
+            self.url, auth=HTTPBasicAuth(self.username, self.password))
+        return '{}'.format(r.json())
 
 
 class Register(Config):
