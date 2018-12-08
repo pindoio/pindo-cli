@@ -2,7 +2,7 @@ pindo-cli
 =========
 .. image:: https://travis-ci.org/pindo-io/pindo-cli.svg?branch=master
     :target: https://travis-ci.org/pindo-io/pindo-cli
-    
+
 A simple command line interface for requesting token and test SMS. 
 
 Installation
@@ -14,7 +14,7 @@ Python.
 
 ::
 
-   pip install pindo-cli
+   pip3 install pindo-cli
 
 Don't have pip installed? Try installing it, by running this from the
 command line:
