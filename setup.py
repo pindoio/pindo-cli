@@ -5,7 +5,12 @@ pindo-cli
 Pindo is a communication platform for humans and machines
 """
 from setuptools import setup
+from os import path
 
+
+this_directory = path.abspath(path.dirname(__file__))
+with open(path.join(this_directory, 'README.rst'), encoding='utf-8') as f:
+    long_description = f.read()
 
 setup(
     name='pindo-cli',
@@ -15,6 +20,8 @@ setup(
     author='Team Pindo',
     author_email='team@pindo.io',
     description=('Pindo is a communication platform for humans and machines'),
+    long_description=long_description,
+    long_description_content_type='text/x-rst',
     packages=['pindo_cli'],
     zip_safe=False,
     include_package_data=True,
