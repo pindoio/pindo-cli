@@ -1,7 +1,7 @@
 import click
 import click_spinner
 
-from pindo_cli.http import Token, Register, SMS
+from pindo_cli.http import Token, RefreshToken, Register, SMS
 
 
 @click.group()
@@ -28,6 +28,21 @@ def token(username, password):
     click.echo('token...')
     with click_spinner.spinner():
         click.echo(Token(username, password))
+
+
+@cli.command()  # @cli, not @click!
+@click.option(
+    '--username', '-u', prompt=True, help='Please enter your username')
+@click.option(
+    '--password', '-p',
+    prompt=True, hide_input=True, help='Please enter your password')
+def refresh_token(username, password):
+    """
+    Refresh a Token.
+    """
+    click.echo('token...')
+    with click_spinner.spinner():
+        click.echo(RefreshToken(username, password))
 
 
 @cli.command()
