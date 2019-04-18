@@ -94,7 +94,8 @@ directly to the constructor (see the code below) or via environment
 variables.
 
 .. code:: python
-
+   
+   # Python
    import requests
 
    token='kbkcmbkcmbkcbc9ic9vixc9vixc9v'
