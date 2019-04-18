@@ -55,14 +55,21 @@ and `password`
 ::
 
 
-Request a Token
+Token
 ~~~~~~~~~~~~~~~
 
 Requesting a `token` require you to provide your `username` and `password`
 
 ::
 
-   pindo register
+   pindo token
+
+::
+
+Refresh your token
+::
+
+   pindo refresh-token
 
 ::
 
@@ -77,3 +84,26 @@ the message your want to send, and also the sender id.
    pindo sms
 
 ::
+
+ API Usage
+~~~~~~~~~~~
+
+The ``pindo api`` needs your Token. You can either pass the token
+directly to the constructor (see the code below) or via environment
+variables.
+
+
+.. code:: python
+	  import requests
+
+	  token='kbkcmbkcmbkcbc9ic9vixc9vixc9v'
+	  hedears = {'Authorization': 'Bearer ' + auth_token}
+	  data = {'app' : 'aaaaa'}
+
+	  url = 'http://api.pindo.io'
+	  response = requests.post(url, json=data, headers=hedears)
+	  print(response)
+	  print(response.json())
+
+
+
