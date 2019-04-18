@@ -95,7 +95,7 @@ variables.
 
 .. code:: python
    
-   # Python
+   # python
    
    import requests
 
@@ -108,5 +108,30 @@ variables.
    print(response)
    print(response.json())
 
+.. code:: javascript
+   
+    // javascript
+
+   var request = require('request');
+   data = {"to" : "+250700000000", "text" : "Hello from Pindo", "sender" : "Pindo"}
+   
+   var options = {
+    method: 'POST',
+    body: data,
+    json: true,
+    url: 'http://api.pindo.io',
+    headers: {
+        'Authorization':'Bearer xxxx'
+    }
+   };
+
+   function callback(error, response, body) {
+       if (!error && response.statusCode == 200) {
+        console.log(body)
+       }
+   }
+   //call the request
+
+   request(options, callback);
 
 
