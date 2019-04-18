@@ -16,7 +16,13 @@ def test_pindo_cli(runner):
 
 
 def test_command_token(runner):
-    result = runner.invoke(pindo_cli.token, ['-u', 'kenessa', '-p', 'bar'])
+    result = runner.invoke(pindo_cli.token, ['-u', 'ken', '-p', 'bar'])
+    assert result.exit_code == 0
+    assert 'message' in result.output
+
+
+def test_command_refresh_token(runner):
+    result = runner.invoke(pindo_cli.refresh_token, ['-u', 'ken', '-p', 'bar'])
     assert result.exit_code == 0
     assert 'message' in result.output
 
@@ -24,7 +30,7 @@ def test_command_token(runner):
 def test_command_register(runner):
     result = runner.invoke(
         pindo_cli.register,
-        ['-u', 'kenessa', '-e', 'remy@pindo.io', '-p', 'bar'])
+        ['-u', 'ken', '-e', 'remy@pindo.io', '-p', 'bar'])
     assert result.exit_code == 0
     assert 'message' in result.output
 
