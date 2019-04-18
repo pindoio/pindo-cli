@@ -93,18 +93,45 @@ The ``pindo api`` needs your Token. You can either pass the token
 directly to the constructor (see the code below) or via environment
 variables.
 
-
 .. code:: python
+   
+   # python
+   
    import requests
 
    token='kbkcmbkcmbkcbc9ic9vixc9vixc9v'
-   hedears = {'Authorization': 'Bearer ' + auth_token}
-   data = {'app' : 'aaaaa'}
+   headers = {'Authorization': 'Bearer ' + token}
+   data = {'to' : '+250700000000', 'text' : 'Hello from Pindo', 'sender' : 'Pindo'}
 
    url = 'http://api.pindo.io'
    response = requests.post(url, json=data, headers=hedears)
    print(response)
    print(response.json())
 
+.. code:: javascript
+   
+    // NodeJS
+
+   var request = require('request');
+   data = {"to" : "+250700000000", "text" : "Hello from Pindo", "sender" : "Pindo"}
+   
+   var options = {
+    method: 'POST',
+    body: data,
+    json: true,
+    url: 'http://api.pindo.io',
+    headers: {
+        'Authorization':'Bearer your-token'
+    }
+   };
+
+   function callback(error, response, body) {
+       if (!error && response.statusCode == 200) {
+        console.log(body)
+       }
+   }
+   //call the request
+
+   request(options, callback);
 
 
