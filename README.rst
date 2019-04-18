@@ -95,16 +95,16 @@ variables.
 
 
 .. code:: python
-	  import requests
+   import requests
 
-	  token='kbkcmbkcmbkcbc9ic9vixc9vixc9v'
-	  hedears = {'Authorization': 'Bearer ' + auth_token}
-	  data = {'app' : 'aaaaa'}
+   token='kbkcmbkcmbkcbc9ic9vixc9vixc9v'
+   hedears = {'Authorization': 'Bearer ' + auth_token}
+   data = {'app' : 'aaaaa'}
 
-	  url = 'http://api.pindo.io'
-	  response = requests.post(url, json=data, headers=hedears)
-	  print(response)
-	  print(response.json())
+   url = 'http://api.pindo.io'
+   response = requests.post(url, json=data, headers=hedears)
+   print(response)
+   print(response.json())
 
 
 
