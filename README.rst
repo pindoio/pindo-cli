@@ -96,11 +96,12 @@ variables.
 .. code:: python
    
    # Python
+   
    import requests
 
    token='kbkcmbkcmbkcbc9ic9vixc9vixc9v'
-   hedears = {'Authorization': 'Bearer ' + auth_token}
-   data = {'app' : 'aaaaa'}
+   headers = {'Authorization': 'Bearer ' + token}
+   data = {'to' : '+250700000000', 'text' : 'Hello from Pindo', 'sender' : 'Pindo'}
 
    url = 'http://api.pindo.io'
    response = requests.post(url, json=data, headers=hedears)
