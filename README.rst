@@ -103,7 +103,7 @@ variables.
    headers = {'Authorization': 'Bearer ' + token}
    data = {'to' : '+250700000000', 'text' : 'Hello from Pindo', 'sender' : 'Pindo'}
 
-   url = 'http://api.pindo.io'
+   url = 'http://api.pindo.io/v1/sms/'
    response = requests.post(url, json=data, headers=headers)
    print(response)
    print(response.json())
@@ -119,7 +119,7 @@ variables.
     method: 'POST',
     body: data,
     json: true,
-    url: 'http://api.pindo.io',
+    url: 'http://api.pindo.io/v1/sms/',
     headers: {
         'Authorization':'Bearer your-token'
     }
