@@ -104,7 +104,7 @@ variables.
    data = {'to' : '+250700000000', 'text' : 'Hello from Pindo', 'sender' : 'Pindo'}
 
    url = 'http://api.pindo.io'
-   response = requests.post(url, json=data, headers=hedears)
+   response = requests.post(url, json=data, headers=headers)
    print(response)
    print(response.json())
 
