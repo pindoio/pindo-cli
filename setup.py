@@ -9,7 +9,7 @@ from setuptools import setup
 
 setup(
     name='pindo-cli',
-    version='0.1.2',
+    version='0.1.3',
     url='http://github.com/pindo-io/pindo-cli',
     license='MIT',
     author='Team Pindo',
