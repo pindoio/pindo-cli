@@ -95,11 +95,16 @@ variables.
 
 .. code:: python
 
-   from twilio.rest import Client
+   import requests
 
-   account = "ACXXXXXXXXXXXXXXXXX"
-   token = "YYYYYYYYYYYYYYYYYY"
-   client = Client(account, token)
+   token='kbkcmbkcmbkcbc9ic9vixc9vixc9v'
+   hedears = {'Authorization': 'Bearer ' + auth_token}
+   data = {'app' : 'aaaaa'}
+
+   url = 'http://api.pindo.io'
+   response = requests.post(url, json=data, headers=hedears)
+   print(response)
+   print(response.json())
 
 
 
