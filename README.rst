@@ -85,7 +85,8 @@ the message your want to send, and also the sender id.
 
 ::
 
- API Usage
+ 
+API Usage
 ~~~~~~~~~~~
 
 The ``pindo api`` needs your Token. You can either pass the token
