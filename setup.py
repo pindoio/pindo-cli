@@ -23,8 +23,9 @@ setup(
     install_requires=[
         'Click==7.0',
         'requests==2.20.0',
-        'pytest-flake8==1.0.2',
-        'pytest-cov==2.6.0',
+        'pytest==4.1',
+        'pytest-flake8==1.0.4',
+        'pytest-cov==2.6.1',
         'click-spinner==0.1.8',
     ],
     tests_require=[],
