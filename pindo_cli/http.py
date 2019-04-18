@@ -80,9 +80,12 @@ class SMS(Config):
             'text': self.text,
             'sender': self.sender
         }
+
+        headers = {'Authorization': 'Bearer ' + self.token}
+        
         r = requests.post(
             self.url,
-            auth=HTTPBasicAuth(self.token, ''),
+            headers=headers,
             json=payload
         )
         return '{}'.format(r.json())
