@@ -7,7 +7,7 @@ class PindoClientException(Exception):
 
 
 class Config:
-    BASE_URL = 'http://178.128.165.87'
+    BASE_URL = 'http://api.pindo.io'
 
 
 class Token(Config):
@@ -26,6 +26,22 @@ class Token(Config):
         return '{}'.format(r.json())
 
 
+class RefreshToken(Config):
+    """
+    Refresh a Pindo token
+    """
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+        self.url = '{}/users/refresh/token'.format(Config.BASE_URL)
+
+    def __str__(self):
+        # request
+        r = requests.get(
+            self.url, auth=HTTPBasicAuth(self.username, self.password))
+        return '{}'.format(r.json())
+
+
 class Register(Config):
     """
     Register a new account
@@ -34,7 +50,7 @@ class Register(Config):
         self.username = username
         self.email = email
         self.password = password
-        self.url = '{}/users/registration'.format(Config.BASE_URL)
+        self.url = '{}/users/register'.format(Config.BASE_URL)
 
     def __str__(self):
         payload = {
@@ -56,7 +72,7 @@ class SMS(Config):
         self.to = to
         self.text = text 
         self.sender = sender
-        self.url = '{}/sms/'.format(Config.BASE_URL)
+        self.url = '{}/v1/sms/'.format(Config.BASE_URL)
 
     def __str__(self):
         payload = {
