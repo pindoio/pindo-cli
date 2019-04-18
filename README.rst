@@ -110,7 +110,7 @@ variables.
 
 .. code:: javascript
    
-    // javascript
+    // NodeJS
 
    var request = require('request');
    data = {"to" : "+250700000000", "text" : "Hello from Pindo", "sender" : "Pindo"}
@@ -121,7 +121,7 @@ variables.
     json: true,
     url: 'http://api.pindo.io',
     headers: {
-        'Authorization':'Bearer xxxx'
+        'Authorization':'Bearer your-token'
     }
    };
 
