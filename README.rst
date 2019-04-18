@@ -93,18 +93,13 @@ The ``pindo api`` needs your Token. You can either pass the token
 directly to the constructor (see the code below) or via environment
 variables.
 
-
 .. code:: python
-   import requests
 
-   token='kbkcmbkcmbkcbc9ic9vixc9vixc9v'
-   hedears = {'Authorization': 'Bearer ' + auth_token}
-   data = {'app' : 'aaaaa'}
+   from twilio.rest import Client
 
-   url = 'http://api.pindo.io'
-   response = requests.post(url, json=data, headers=hedears)
-   print(response)
-   print(response.json())
+   account = "ACXXXXXXXXXXXXXXXXX"
+   token = "YYYYYYYYYYYYYYYYYY"
+   client = Client(account, token)
 
 
 
