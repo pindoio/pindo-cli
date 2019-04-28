@@ -50,13 +50,26 @@ Sending a test message will require you providing the requested token, a receive
 
 The `pindo api` needs your Token. You can either pass the token directly to the constructor (see the code below) or via environment variables.
 
+```console
+curl -X POST \
+http://api.pindo.io/v1/sms/ \
+-H 'Accept: */*' \
+-H 'Authorization: Bearer your-token' \
+-H 'Content-Type: application/json' \
+-d '{
+"to" : "+250785383100", 
+"text" : "Hello from Pindo",
+"sender" : "Pindo"
+}'
+```
+
 ```python
 
 # python
 
 import requests
 
-token='kbkcmbkcmbkcbc9ic9vixc9vixc9v'
+token='your-token'
 headers = {'Authorization': 'Bearer ' + token}
 data = {'to' : '+250700000000', 'text' : 'Hello from Pindo', 'sender' : 'Pindo'}
 
