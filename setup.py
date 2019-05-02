@@ -32,11 +32,13 @@ setup(
         'requests==2.20.0',
         'click-spinner==0.1.8'
     ],
-    tests_require=[
-        'pytest==4.1',
-        'pytest-flake8==1.0.4',
-        'pytest-cov==2.6.1'
-    ],
+    extras_require={
+        'test': [
+            'pytest==4.1',
+            'pytest-flake8==1.0.4',
+            'pytest-cov==2.6.1'
+        ]
+    },
     entry_points='''
     [console_scripts]
     pindo=pindo_cli:cli
