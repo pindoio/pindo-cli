@@ -102,5 +102,8 @@ class Balance(Config):
         headers = {'Authorization': 'Bearer ' + self.token}
         wallet_url = '{}/wallets/self'.format(Config.BASE_URL)
         r = requests.get(wallet_url, headers=headers)
-        amount = "'amount': ${}".format(r.json()['amount'])
-        return '{{0}}'.format(amount)
+        r_dict = r.json()
+        for key in r_dict:
+            if key != 'amount':
+                r_dict.pop(key)
+        return '{}'.format(r_dict)
