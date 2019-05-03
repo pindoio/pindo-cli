@@ -1,8 +1,6 @@
 import requests
 from requests.auth import HTTPBasicAuth
 
-from app.wallets.models import Wallet
-
 
 class PindoClientException(Exception):
     pass
@@ -102,12 +100,7 @@ class Balance(Config):
 
     def __str__(self):
         headers = {'Authorization': 'Bearer ' + self.token}
-        r = requests.get('{}/users/0'.format(Config.BASE_URL), headers=headers)
-        user_id = r.json()['id']
-
-        wallet = Wallet.get_wallet(user_id)
-        r = requests.get('{}/wallets/{}'.format(Config.BASE_URL, wallet.id),
-                         headers=headers)
-
+        wallet_url = '{}/wallets/self'.format(Config.BASE_URL)
+        r = requests.get(wallet_url, headers=headers)
         amount = "'amount': ${}".format(r.json()['amount'])
         return '{{0}}'.format(amount)
