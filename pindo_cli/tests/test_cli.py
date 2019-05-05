@@ -45,3 +45,12 @@ def test_command_sms(runner):
         ])
     assert result.exit_code == 0
     assert 'message' in result.output
+
+
+def test_command_(runner):
+    result = runner.invoke(
+        pindo_cli.balance, [
+            '--token', 'oeiroeoeioeoiroe',
+        ])
+    assert result.exit_code == 0
+    assert 'message' in result.output

@@ -1,7 +1,7 @@
 import click
 import click_spinner
 
-from pindo_cli.http import Token, RefreshToken, Register, SMS
+from pindo_cli.http import Token, RefreshToken, Register, SMS, Balance
 
 
 @click.group()
@@ -70,6 +70,15 @@ def register(username, email, password):
 @click.option('--sender', prompt=True, default='Pindo', help='Sender name')
 def sms(token, to, text, sender):
     """
-        Send a test message
+    Send a test message
     """
     click.echo(SMS(token, to, text, sender))
+
+
+@cli.command()
+@click.option('--token', prompt=True, help='API Token')
+def balance(token):
+    """
+    Get account balance
+    """
+    click.echo(Balance(token))

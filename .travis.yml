@@ -2,7 +2,7 @@ language: python
 python:
 - '3.6'
 install:
-- pip install .
+- pip install -e ".[test]"
 script:
 - py.test -v --cov-report=term-missing --cov-config .coveragerc --flake8 --cov=pindo_cli pindo_cli/tests
 deploy:

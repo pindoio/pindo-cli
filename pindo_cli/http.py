@@ -64,13 +64,13 @@ class Register(Config):
 
 class SMS(Config):
     """
-        Send a test Message
+    Send a test Message
     """
 
     def __init__(self, token, to, text, sender):
         self.token = token
         self.to = to
-        self.text = text 
+        self.text = text
         self.sender = sender
         self.url = '{}/v1/sms/'.format(Config.BASE_URL)
 
@@ -82,7 +82,7 @@ class SMS(Config):
         }
 
         headers = {'Authorization': 'Bearer ' + self.token}
-        
+
         r = requests.post(
             self.url,
             headers=headers,
@@ -90,3 +90,16 @@ class SMS(Config):
         )
         return '{}'.format(r.json())
 
+
+class Balance(Config):
+    """
+    Get user's wallet
+    """
+    def __init__(self, token):
+        self.token = token
+
+    def __str__(self):
+        headers = {'Authorization': 'Bearer ' + self.token}
+        wallet_url = '{}/wallets/self'.format(Config.BASE_URL)
+        r = requests.get(wallet_url, headers=headers)
+        return '{}'.format(r.json())
