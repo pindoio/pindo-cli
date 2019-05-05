@@ -14,7 +14,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='pindo-cli',
-    version='0.1.6',
+    version='0.1.7',
     url='http://github.com/pindo-io/pindo-cli',
     license='MIT',
     author='Team Pindo',
@@ -45,13 +45,12 @@ setup(
     ''',
     test_suite="tests",
     classifiers=[
-        'Environment :: CLI',
+        'Environment :: Console',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 3',
-        'Topic :: Internet :: CLI :: Command-line Interface'
+        'Programming Language :: Python :: 3'
     ]
 )

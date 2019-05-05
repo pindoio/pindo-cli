@@ -60,7 +60,7 @@ http://api.pindo.io/v1/sms/ \
 -H 'Authorization: Bearer your-token' \
 -H 'Content-Type: application/json' \
 -d '{
-"to" : "+250785383100", 
+"to" : "+250781234567", 
 "text" : "Hello from Pindo",
 "sender" : "Pindo"
 }'
@@ -74,7 +74,7 @@ import requests
 
 token='your-token'
 headers = {'Authorization': 'Bearer ' + token}
-data = {'to' : '+250xxxxxxxx', 'text' : 'Hello from Pindo', 'sender' : 'Pindo'}
+data = {'to' : '+250781234567', 'text' : 'Hello from Pindo', 'sender' : 'Pindo'}
 
 url = 'http://api.pindo.io/v1/sms/'
 response = requests.post(url, json=data, headers=headers)
@@ -87,7 +87,7 @@ print(response.json())
 // NodeJS
 
 var request = require("request");
-data = { to: "+250xxxxxxxx", text: "Hello from Pindo", sender: "Pindo" };
+data = { to: "+250781234567", text: "Hello from Pindo", sender: "Pindo" };
 
 var options = {
 method: "POST",
@@ -116,7 +116,7 @@ request(options, callback);
 OkHttpClient client = new OkHttpClient();
 
 MediaType mediaType = MediaType.parse("application/json");
-RequestBody body = RequestBody.create(mediaType, "{"to" : "+250xxxxxxxx", "text" : "Hello from Pindo","sender" : "Pindo"}");
+RequestBody body = RequestBody.create(mediaType, "{"to" : "+250781234567", "text" : "Hello from Pindo","sender" : "Pindo"}");
 Request request = new Request.Builder()
 .url("http://api.pindo.io/v1/sms/")
 .post(body)
@@ -141,7 +141,7 @@ $request->setHeaders(array(
 ));
 
 $request->setBody('{
-"to" : "+250xxxxxxxx", 
+"to" : "+250781234567", 
 "text" : "Hello from Pindo",
 "sender" : "Pindo"
 }');
@@ -172,7 +172,7 @@ func main() {
 
 url := "http://api.pindo.io/v1/sms/"
 
-payload := strings.NewReader("{"to" : "+250xxxxxxxx", "text" : "Hello from Pindo","sender" : "Pindo"}")
+payload := strings.NewReader("{"to" : "+250781234567", "text" : "Hello from Pindo","sender" : "Pindo"}")
 
 req, _ := http.NewRequest("POST", url, payload)
 
