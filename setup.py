@@ -45,7 +45,7 @@ setup(
     ''',
     test_suite="tests",
     classifiers=[
-        'Environment :: CLI',
+        'Environment :: Console',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
