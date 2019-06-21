@@ -189,3 +189,15 @@ fmt.Println(string(body))
 
 }
 ```
+
+```csharp
+
+// C#
+
+var client = new RestClient("http://api.pindo.io/v1/sms/");
+var request = new RestRequest(Method.POST);
+request.AddHeader("Authorization", "Bearer your-token");
+request.AddHeader("Content-Type", "application/json");
+request.AddParameter("undefined", "{\n\t\"to\" : \"+250781234567\", \n\t\"text\" : \"Hello from Pindo\",\n\t\"sender\" : \"Pindo\"\n}", ParameterType.RequestBody);
+IRestResponse response = client.Execute(request);
+```
