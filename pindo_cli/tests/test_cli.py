@@ -1,5 +1,6 @@
 import pytest
 from click.testing import CliRunner
+from pkg_resources import get_distribution
 
 import pindo_cli
 
@@ -45,3 +46,18 @@ def test_command_sms(runner):
         ])
     assert result.exit_code == 0
     assert 'message' in result.output
+
+
+def test_command_(runner):
+    result = runner.invoke(
+        pindo_cli.balance, [
+            '--token', 'oeiroeoeioeoiroe',
+        ])
+    assert result.exit_code == 0
+    assert 'message' in result.output
+
+
+def test_pindo_cli_version_flag(runner):
+    result = runner.invoke(pindo_cli.cli, ['--version', "-v"])
+    assert result.exit_code == 0
+    assert get_distribution('pindo-cli').version in result.output
