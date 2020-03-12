@@ -60,7 +60,7 @@ http://api.pindo.io/v1/sms/ \
 -H 'Authorization: Bearer your-token' \
 -H 'Content-Type: application/json' \
 -d '{
-"to" : "+250781234567", 
+"to" : "+250781234567",
 "text" : "Hello from Pindo",
 "sender" : "Pindo"
 }'
@@ -90,19 +90,19 @@ var request = require("request");
 data = { to: "+250781234567", text: "Hello from Pindo", sender: "Pindo" };
 
 var options = {
-method: "POST",
-body: data,
-json: true,
-url: "http://api.pindo.io/v1/sms/",
-headers: {
-Authorization: "Bearer your-token"
-}
+  method: "POST",
+  body: data,
+  json: true,
+  url: "http://api.pindo.io/v1/sms/",
+  headers: {
+    Authorization: "Bearer your-token"
+  }
 };
 
 function callback(error, response, body) {
-if (!error && response.statusCode == 200) {
-console.log(body);
-}
+  if (!error && response.statusCode == 200) {
+    console.log(body);
+  }
 }
 //call the request
 
@@ -126,7 +126,6 @@ Request request = new Request.Builder()
 Response response = client.newCall(request).execute();
 ```
 
-
 ```php
 
 // PHP
@@ -141,7 +140,7 @@ $request->setHeaders(array(
 ));
 
 $request->setBody('{
-"to" : "+250781234567", 
+"to" : "+250781234567",
 "text" : "Hello from Pindo",
 "sender" : "Pindo"
 }');
@@ -200,4 +199,23 @@ request.AddHeader("Authorization", "Bearer your-token");
 request.AddHeader("Content-Type", "application/json");
 request.AddParameter("undefined", "{\n\t\"to\" : \"+250781234567\", \n\t\"text\" : \"Hello from Pindo\",\n\t\"sender\" : \"Pindo\"\n}", ParameterType.RequestBody);
 IRestResponse response = client.Execute(request);
+```
+
+```ruby
+# ruby
+
+require 'net/http'
+require 'json'
+
+uri = URI('http://api.pindo.io/v1/sms/')
+data = { to: '+250781234567', text: 'Hello from Pindo', sender: 'Pindo' };
+# To send the request via https, keep the use_ssl to true
+res = Net::HTTP.start(uri.host, uri.port, use_ssl: true) do |http|
+  req = Net::HTTP::Post.new(uri)
+  req['Authorization'] = 'Bearer your-token'
+  req['Content-Type'] = 'application/json'
+  req.body = data.to_json
+  http.request(req)
+end
+
 ```
