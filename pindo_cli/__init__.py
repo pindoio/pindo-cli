@@ -6,6 +6,7 @@ from pindo_cli.http import Token, RefreshToken, Register, SMS, Balance
 
 @click.group()
 @click.option('--debug/--no-debug', default=False)
+@click.version_option(None, "--version", "-v")
 def cli(debug):
     """
     Pindo CLI
