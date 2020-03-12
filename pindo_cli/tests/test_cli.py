@@ -60,4 +60,4 @@ def test_command_(runner):
 def test_pindo_cli_version_flag(runner):
     result = runner.invoke(pindo_cli.cli, ['--version', "-v"])
     assert result.exit_code == 0
-    assert get_distribution('pindo-cli').version in result.output    
+    assert get_distribution('pindo-cli').version in result.output
