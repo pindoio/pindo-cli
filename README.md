@@ -206,15 +206,16 @@ IRestResponse response = client.Execute(request);
 
 require 'net/http'
 require 'json'
+require 'uri'
+
+data = { to: '+250781234567', text: 'Hello from Pindo', sender: 'Pindo' };
 
 uri = URI('http://api.pindo.io/v1/sms/')
-data = { to: '+250781234567', text: 'Hello from Pindo', sender: 'Pindo' };
-res = Net::HTTP.start(uri.host, uri.port) do |http|
-  req = Net::HTTP::Post.new(uri)
-  req['Authorization'] = 'Bearer your-token'
-  req['Content-Type'] = 'application/json'
-  req.body = data.to_json
-  http.request(req)
-end
+http = Net::HTTP.new(uri.host, uri.port)
+req = Net::HTTP::Post.new(uri)
+req['Authorization'] = 'Bearer your-token'
+req['Content-Type'] = 'application/json'
+req.body = data.to_json
+http.request(req)
 
 ```
