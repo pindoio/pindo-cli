@@ -209,8 +209,7 @@ require 'json'
 
 uri = URI('http://api.pindo.io/v1/sms/')
 data = { to: '+250781234567', text: 'Hello from Pindo', sender: 'Pindo' };
-# To send the request via https, keep the use_ssl to true
-res = Net::HTTP.start(uri.host, uri.port, use_ssl: true) do |http|
+res = Net::HTTP.start(uri.host, uri.port) do |http|
   req = Net::HTTP::Post.new(uri)
   req['Authorization'] = 'Bearer your-token'
   req['Content-Type'] = 'application/json'
