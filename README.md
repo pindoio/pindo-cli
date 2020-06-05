@@ -20,7 +20,7 @@ You may need to run the above commands with `sudo`.
 
 ## Getting Started
 
-Once you're have install **Pindo CLI** you're ready to go.
+Once you have installed **Pindo CLI** you're ready to go.
 
 `pindo --help`
 
@@ -42,7 +42,7 @@ Refresh your token
 
 ## Send a test message
 
-Sending a test message will require you providing the requested token, a receiver, the message your want to send, and also the sender id.
+Sending a test message will require providing the requested token, a receiver, the message your want to send, and also the sender id.
 
 `pindo sms`
 
@@ -217,5 +217,36 @@ req['Authorization'] = 'Bearer your-token'
 req['Content-Type'] = 'application/json'
 req.body = data.to_json
 http.request(req)
+
+```
+
+```dart
+
+// Dart
+
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+Future main() async {
+  String url = 'http://api.pindo.io/v1/sms/';
+  Map<String, String> data = {
+    'to': '+250781234567',
+    'text': 'Hello from Pindo',
+    'sender': 'Pindo'
+  };
+
+  Map<String, String> headers = {
+    'Authorization': 'Bearer your-token',
+    'Content-Type': 'application/json'
+  };
+
+  http.Response response = await http.post(
+    url,
+    body: jsonEncode(data),
+    headers: headers,
+  );
+  print(response.statusCode);
+  print(jsonDecode(response.body));
+}
 
 ```
