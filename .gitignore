@@ -111,3 +111,4 @@ ENV/
 .pytest_cache
 */.pytest_cache
 celerybeat-schedule
+Pipfile*
