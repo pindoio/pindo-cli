@@ -7,7 +7,7 @@ class PindoClientException(Exception):
 
 
 class Config:
-    BASE_URL = 'http://api.pindo.io'
+    BASE_URL = 'https://api.pindo.io'
 
 
 class Token(Config):
