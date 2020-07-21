@@ -1,7 +1,7 @@
 import click
 import click_spinner
 
-from pindo_cli.http import Token, RefreshToken, Register, SMS, Balance
+from pindo_cli.http import Token, RefreshToken, Register, SMS, Balance, Organization
 
 
 @click.group()
@@ -83,3 +83,15 @@ def balance(token):
     Get account balance
     """
     click.echo(Balance(token))
+
+
+@cli.command()
+@click.option('--token', prompt=True, help='API Token')
+@click.option('--name', prompt=True, help='Organization name')
+@click.option('--webhook_url', prompt=True, help='Webhook URL. Eg (https://pindo.io/dlr)')
+@click.option('--retries_count', prompt=True, type=(int), help='SMS retries count settings')
+def org(token, name, webhook_url, retries_count):
+    """
+    Organization
+    """
+    click.echo(Organization(token, name, webhook_url, retries_count))
