@@ -24,7 +24,8 @@ Once you have installed **Pindo CLI** you're ready to go.
 
 ```bash 
 pindo --help
-/*
+
+: '
 Usage: pindo [OPTIONS] COMMAND [ARGS]...
 
 	Pindo CLI
@@ -44,7 +45,7 @@ Commands:
 	register       Create a new Pindo account.
     sms            Send a test message
     token          Request a token for using Pindo API.
-*/
+'
 ```
 
 - Create an account
