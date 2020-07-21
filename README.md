@@ -46,25 +46,6 @@ Commands:
   sms            Send a test message
   token          Request a token for using Pindo API.
 ```
-
-- Create an account
-
-```bash 
-pindo register
-```
-
-- Token
-
-```bash 
-pindo token
-```
-
-- Refresh your token
-
-```bash 
-pindo refresh-token
-```
-
 - Send a test message
 
 ```bash 
@@ -81,6 +62,37 @@ Options:
   --text TEXT    Message to send
   --sender TEXT  Sender name
   --help         Show this message and exit.
+```
+
+## API Response Code
+
+| **Code** | **Text** | **Meaning** |
+---| --- | ---
+200 | sent | Successfully sent
+401 | unauthorized | unauthorized access
+404 | not found | invalid resource URI
+409 | conflict | number is from unsupported country
+409 | conflict | number is from unsupported telco
+409 | conflict | Wrong phone number format
+
+An example of a successfully sent SMS.
+
+```json
+{
+    "count": 1,
+    "remaining_balance": 3.11,
+    "self_url": "https://api.pindo.io/v1/sms/1058918",
+    "sms_items": [
+        {
+            "id": 1062502,
+            "item_price": 0.01,
+            "network": "63510",
+            "remaining_balance": 3.11,
+            "status": sent,
+            "to": "+250785383100"
+        }
+    ]
+}
 ```
 
 ## API Usage
