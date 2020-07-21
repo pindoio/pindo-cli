@@ -24,8 +24,8 @@ Once you have installed **Pindo CLI** you're ready to go.
 
 ```bash 
 pindo --help
-
-: '
+```
+```bash
 Usage: pindo [OPTIONS] COMMAND [ARGS]...
 
   Pindo CLI
@@ -45,7 +45,6 @@ Commands:
   register       Create a new Pindo account.
   sms            Send a test message
   token          Request a token for using Pindo API.
-'
 ```
 
 - Create an account
@@ -54,21 +53,35 @@ Commands:
 pindo register
 ```
 
-## Token
+- Token
 
-Requesting a token require you to provide your username and password
+```bash 
+pindo token
+```
 
-`pindo token`
+- Refresh your token
 
-Refresh your token
+```bash 
+pindo refresh-token
+```
 
-`pindo refresh-token`
+- Send a test message
 
-## Send a test message
+```bash 
+pindo sms --help
+```
+```bash
+Usage: pindo sms [OPTIONS]
 
-Sending a test message will require providing the requested token, a receiver, the message your want to send, and also the sender id.
+  Send a test message
 
-`pindo sms`
+Options:
+  --token TEXT   API Token
+  --to TEXT      Receiver phone number (+250xxxxxx)
+  --text TEXT    Message to send
+  --sender TEXT  Sender name
+  --help         Show this message and exit.
+```
 
 ## API Usage
 
