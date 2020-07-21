@@ -14,7 +14,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='pindo-cli',
-    version='0.1.7',
+    version='0.1.8',
     url='http://github.com/pindo-io/pindo-cli',
     license='MIT',
     author='Team Pindo',
