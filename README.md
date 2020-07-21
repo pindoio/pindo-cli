@@ -22,13 +22,36 @@ You may need to run the above commands with `sudo`.
 
 Once you have installed **Pindo CLI** you're ready to go.
 
-`pindo --help`
+```bash 
+pindo --help
+<<COMMENT1
+	Usage: pindo [OPTIONS] COMMAND [ARGS]...
 
-## Create an account
+	  Pindo CLI
 
-For creating a Pindo account you need to provide your username, email, and password
+	  A simple Command Line Interface that allow you to create an account and
+	  request a token for using Pindo API
 
-`pindo register`
+	Options:
+	  --debug / --no-debug
+	  -v, --version         Show the version and exit.
+	  --help                Show this message and exit.
+
+	Commands:
+	  balance        Get account balance
+	  org            Organization
+	  refresh-token  Refresh a Token.
+	  register       Create a new Pindo account.
+      sms            Send a test message
+      token          Request a token for using Pindo API.
+COMMENT1
+```
+
+- Create an account
+
+```bash 
+pindo register
+```
 
 ## Token
 
