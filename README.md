@@ -24,27 +24,27 @@ Once you have installed **Pindo CLI** you're ready to go.
 
 ```bash 
 pindo --help
-<<COMMENT1
-	Usage: pindo [OPTIONS] COMMAND [ARGS]...
+/*
+Usage: pindo [OPTIONS] COMMAND [ARGS]...
 
-	  Pindo CLI
+	Pindo CLI
 
-	  A simple Command Line Interface that allow you to create an account and
-	  request a token for using Pindo API
+	A simple Command Line Interface that allow you to create an account and
+	request a token for using Pindo API
 
-	Options:
-	  --debug / --no-debug
-	  -v, --version         Show the version and exit.
-	  --help                Show this message and exit.
+Options:
+	--debug / --no-debug
+	-v, --version         Show the version and exit.
+	--help                Show this message and exit.
 
-	Commands:
-	  balance        Get account balance
-	  org            Organization
-	  refresh-token  Refresh a Token.
-	  register       Create a new Pindo account.
-      sms            Send a test message
-      token          Request a token for using Pindo API.
-COMMENT1
+Commands:
+	balance        Get account balance
+	org            Organization
+	refresh-token  Refresh a Token.
+	register       Create a new Pindo account.
+    sms            Send a test message
+    token          Request a token for using Pindo API.
+*/
 ```
 
 - Create an account
