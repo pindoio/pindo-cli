@@ -7,7 +7,7 @@ class PindoClientException(Exception):
 
 
 class Config:
-    BASE_URL = 'http://api.pindo.io'
+    BASE_URL = 'https://api.pindo.io'
 
 
 class Token(Config):
@@ -23,6 +23,7 @@ class Token(Config):
         # request
         r = requests.get(
             self.url, auth=HTTPBasicAuth(self.username, self.password))
+        
         return '{}'.format(r.json())
 
 
@@ -39,6 +40,7 @@ class RefreshToken(Config):
         # request
         r = requests.get(
             self.url, auth=HTTPBasicAuth(self.username, self.password))
+        
         return '{}'.format(r.json())
 
 
@@ -59,6 +61,7 @@ class Register(Config):
             'password': self.password
         }
         r = requests.post(self.url, json=payload)
+        
         return '{}'.format(r.json())
 
 
@@ -88,6 +91,7 @@ class SMS(Config):
             headers=headers,
             json=payload
         )
+        
         return '{}'.format(r.json())
 
 
@@ -102,4 +106,32 @@ class Balance(Config):
         headers = {'Authorization': 'Bearer ' + self.token}
         wallet_url = '{}/wallets/self'.format(Config.BASE_URL)
         r = requests.get(wallet_url, headers=headers)
+        
+        return '{}'.format(r.json())
+
+
+class Organization(Config):
+    """
+    Organization setup
+    """
+    def __init__(self, token, name, webhook_url, retries_count):
+        self.token = token
+        self.name = name
+        self.webhook_url = webhook_url
+        self.retries_count = retries_count
+
+    def __str__(self):
+        payload = {
+            'name': self.name,
+            'webhook_url': self.webhook_url,
+            'sms_retries': self.retries_count
+        }
+        headers = {'Authorization': 'Bearer ' + self.token}
+        org_url = '{}/orgs/self'.format(Config.BASE_URL)
+        r = requests.put(
+            org_url,
+            headers=headers,
+            json=payload
+        )
+        
         return '{}'.format(r.json())
