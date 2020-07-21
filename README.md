@@ -88,7 +88,7 @@ An example of a successfully sent SMS.
             "item_price": 0.01,
             "network": "63510",
             "remaining_balance": 3.11,
-            "status": sent,
+            "status": "sent",
             "to": "+250785383100"
         }
     ]
