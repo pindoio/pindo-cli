@@ -89,7 +89,7 @@ An example of a successfully sent SMS.
             "network": "63510",
             "remaining_balance": 3.11,
             "status": "sent",
-            "to": "+250785383100"
+            "to": "+250785000000"
         }
     ]
 }
