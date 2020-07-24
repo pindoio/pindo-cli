@@ -90,7 +90,7 @@ Options:
             "network": "63510",
             "remaining_balance": 3.11,
             "status": "sent",
-            "to": "+250785383100"
+            "to": "+250785000000"
         }
     ]
 }
@@ -117,7 +117,7 @@ The `pindo api` needs your Token. You can either pass the token directly to the 
 # cURL
 
 curl -X POST \
-http://api.pindo.io/v1/sms/ \
+https://api.pindo.io/v1/sms/ \
 -H 'Accept: */*' \
 -H 'Authorization: Bearer your-token' \
 -H 'Content-Type: application/json' \
@@ -138,7 +138,7 @@ token='your-token'
 headers = {'Authorization': 'Bearer ' + token}
 data = {'to' : '+250781234567', 'text' : 'Hello from Pindo', 'sender' : 'Pindo'}
 
-url = 'http://api.pindo.io/v1/sms/'
+url = 'https://api.pindo.io/v1/sms/'
 response = requests.post(url, json=data, headers=headers)
 print(response)
 print(response.json())
@@ -155,7 +155,7 @@ var options = {
   method: "POST",
   body: data,
   json: true,
-  url: "http://api.pindo.io/v1/sms/",
+  url: "https://api.pindo.io/v1/sms/",
   headers: {
     Authorization: "Bearer your-token"
   }
@@ -180,7 +180,7 @@ OkHttpClient client = new OkHttpClient();
 MediaType mediaType = MediaType.parse("application/json");
 RequestBody body = RequestBody.create(mediaType, "{"to" : "+250781234567", "text" : "Hello from Pindo","sender" : "Pindo"}");
 Request request = new Request.Builder()
-.url("http://api.pindo.io/v1/sms/")
+.url("https://api.pindo.io/v1/sms/")
 .post(body)
 .addHeader("Content-Type", "application/json")
 .addHeader("Authorization", "Bearer your-token")
@@ -193,7 +193,7 @@ Response response = client.newCall(request).execute();
 // PHP
 
 $request = new HttpRequest();
-$request->setUrl('http://api.pindo.io/v1/sms/');
+$request->setUrl('https://api.pindo.io/v1/sms/');
 $request->setMethod(HTTP_METH_POST);
 
 $request->setHeaders(array(
@@ -231,7 +231,7 @@ import (
 
 func main() {
 
-url := "http://api.pindo.io/v1/sms/"
+url := "https://api.pindo.io/v1/sms/"
 
 payload := strings.NewReader("{"to" : "+250781234567", "text" : "Hello from Pindo","sender" : "Pindo"}")
 
@@ -255,7 +255,7 @@ fmt.Println(string(body))
 
 // C#
 
-var client = new RestClient("http://api.pindo.io/v1/sms/");
+var client = new RestClient("https://api.pindo.io/v1/sms/");
 var request = new RestRequest(Method.POST);
 request.AddHeader("Authorization", "Bearer your-token");
 request.AddHeader("Content-Type", "application/json");
@@ -272,7 +272,7 @@ require 'uri'
 
 data = { to: '+250781234567', text: 'Hello from Pindo', sender: 'Pindo' };
 
-uri = URI('http://api.pindo.io/v1/sms/')
+uri = URI('https://api.pindo.io/v1/sms/')
 http = Net::HTTP.new(uri.host, uri.port)
 req = Net::HTTP::Post.new(uri)
 req['Authorization'] = 'Bearer your-token'
@@ -290,7 +290,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 Future main() async {
-  String url = 'http://api.pindo.io/v1/sms/';
+  String url = 'https://api.pindo.io/v1/sms/';
   Map<String, String> data = {
     'to': '+250781234567',
     'text': 'Hello from Pindo',
