@@ -75,12 +75,13 @@ Options:
 409 | conflict | number is from unsupported telco
 409 | conflict | Wrong phone number format
 
-An example of a successfully sent SMS.
+- An example of a successfully sent SMS.
 
 ```json
 {
     "count": 1,
     "remaining_balance": 3.11,
+	"sms_id":"1058918",
     "self_url": "https://api.pindo.io/v1/sms/1058918",
     "sms_items": [
         {
@@ -93,6 +94,18 @@ An example of a successfully sent SMS.
         }
     ]
 }
+```
+
+- Pindo Webhook Event example `POST` methods
+
+```json
+{
+    "status": "DELIVRD",
+    "sms_id": 1058918,
+    "modified_at": "24-07-2020, 23:35:32",
+    "retries_count": 0
+}
+
 ```
 
 ## API Usage
