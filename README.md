@@ -216,7 +216,6 @@ echo $ex;
 }
 
 // cURL
-<?php
 
 $curl = curl_init();
 
