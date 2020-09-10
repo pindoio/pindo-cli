@@ -68,7 +68,7 @@ Options:
 
 | **Code** | **Text** | **Meaning** |
 ---| --- | ---
-200 | sent | Successfully sent
+201 | sent | Successfully sent
 401 | unauthorized | unauthorized access
 404 | not found | invalid resource URI
 409 | conflict | number is from unsupported country
