@@ -4,24 +4,45 @@ version = "0.1.0"
 description = "A simple Command Line Interface that allows you to authenticate with the Pindo API."
 authors = ["Team Pindo <team@pindo.io>"]
 license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/pindoio/pindo-cli"
+repository = "https://github.com/pindoio/pindo-cli"
+documentation = "https://github.com/pindoio/pindo-cli"
+keywords = ["agile", "standup"]
 classifiers=[
         'Environment :: Console',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 3'
+        'Operating System :: Microsoft :: Windows',
+        'Operating System :: MacOS',
+        'Operating System :: POSIX :: Linux',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
 ]
 packages = [
     { include = "pindo_cli" }
 ]
 
+[tool.black]
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.venv
+  | \.env
+  | build
+  | dist
+  | \.mypy_cache
+)\
+'''
+
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.7"
 click8 = "^8.0.1"
 requests = "^2.25.1"
 click-spinner = "^0.1.10"
+tomlkit = "^0.7.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"
@@ -31,6 +52,7 @@ tomlkit = "^0.7.0"
 coverage = {version = "^5.5", extras = ["toml"]}
 flake8 = "^3.9.2"
 flake8-bugbear = "^21.4.3"
+black = "^21.5b0"
 
 [tool.coverage.run]
 omit = [".*", "*/site-packages/*"]
