@@ -14,7 +14,6 @@ jobs:
   build:
     name: Build tool
     runs-on: ${{ matrix.os }}
-    needs: black-formatting-check
     strategy:
       matrix:
         os:
