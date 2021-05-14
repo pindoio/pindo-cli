@@ -11,9 +11,17 @@ defaults:
     shell: bash
 
 jobs:
+  black-formatting-check:
+    name: Check formatting
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: actions/checkout@v2.3.4
+      - uses: actions/setup-python@v2.2.2
+      - uses: psf/black@stable
   build:
     name: Build tool
     runs-on: ${{ matrix.os }}
+    needs: black-formatting-check
     strategy:
       matrix:
         os:
