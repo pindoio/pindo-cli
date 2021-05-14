@@ -23,7 +23,7 @@ class Token(Config):
         # request
         r = requests.get(
             self.url, auth=HTTPBasicAuth(self.username, self.password))
-        
+
         return '{}'.format(r.json())
 
 
@@ -40,7 +40,7 @@ class RefreshToken(Config):
         # request
         r = requests.get(
             self.url, auth=HTTPBasicAuth(self.username, self.password))
-        
+
         return '{}'.format(r.json())
 
 
@@ -61,7 +61,7 @@ class Register(Config):
             'password': self.password
         }
         r = requests.post(self.url, json=payload)
-        
+
         return '{}'.format(r.json())
 
 
@@ -91,7 +91,7 @@ class SMS(Config):
             headers=headers,
             json=payload
         )
-        
+
         return '{}'.format(r.json())
 
 
@@ -106,7 +106,7 @@ class Balance(Config):
         headers = {'Authorization': 'Bearer ' + self.token}
         wallet_url = '{}/wallets/self'.format(Config.BASE_URL)
         r = requests.get(wallet_url, headers=headers)
-        
+
         return '{}'.format(r.json())
 
 
@@ -133,5 +133,5 @@ class Organization(Config):
             headers=headers,
             json=payload
         )
-        
+
         return '{}'.format(r.json())

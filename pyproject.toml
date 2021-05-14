@@ -1,0 +1,46 @@
+[tool.poetry]
+name = "pindo-cli"
+version = "0.1.0"
+description = "A simple Command Line Interface that allows you to authenticate with the Pindo API."
+authors = ["Team Pindo <team@pindo.io>"]
+license = "MIT"
+classifiers=[
+        'Environment :: Console',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 3'
+]
+packages = [
+    { include = "pindo_cli" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+click8 = "^8.0.1"
+requests = "^2.25.1"
+click-spinner = "^0.1.10"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.4"
+pytest-flake8 = "^1.0.7"
+pytest-cov = "^2.11.1"
+tomlkit = "^0.7.0"
+coverage = {version = "^5.5", extras = ["toml"]}
+flake8 = "^3.9.2"
+flake8-bugbear = "^21.4.3"
+
+[tool.coverage.run]
+omit = [".*", "*/site-packages/*"]
+
+[tool.coverage.report]
+fail_under = 100
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+pindo = 'pindo_cli:cli'
