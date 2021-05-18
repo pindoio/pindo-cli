@@ -1,20 +1,13 @@
+name: Continuous Integration
+
 on:
-  push:
-    branches: [master]
   pull_request:
     branches: [master]
-
-name: Build
-
-defaults:
-  run:
-    shell: bash
 
 jobs:
   build:
     name: Build tool
     runs-on: ${{ matrix.os }}
-    needs: black-formatting-check
     strategy:
       matrix:
         os:
