@@ -10,8 +10,8 @@ from pindo_cli.http import Token, RefreshToken, Register, SMS, Balance, Organiza
 def cli(debug):
     """
     Pindo CLI
-    A simple Command Line Interface that allow you to create an account
-    and request a token for using Pindo API
+    A simple Command Line Interface that allows you to authenticate with 
+    the Pindo API
     """
 
 
