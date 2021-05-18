@@ -11,13 +11,6 @@ defaults:
     shell: bash
 
 jobs:
-  black-formatting-check:
-    name: Check formatting
-    runs-on: 'ubuntu-latest'
-    steps:
-      - uses: actions/checkout@v2.3.4
-      - uses: actions/setup-python@v2.2.2
-      - uses: psf/black@stable
   build:
     name: Build tool
     runs-on: ${{ matrix.os }}
@@ -74,5 +67,18 @@ jobs:
           poetry install --no-interaction
       - name: Run tests
         run: poetry run pytest -v
-      - name: Build artifacts
-        run: poetry build
+
+  Release:
+    needs: build
+    # https://github.community/t/how-do-i-specify-job-dependency-running-in-another-workflow/16482
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && !contains(github.event.head_commit.message, 'chore(release):')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Python Semantic Release
+        uses: relekang/python-semantic-release@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pypi_token: ${{ secrets.PYPI_TOKEN }}

@@ -24,18 +24,15 @@ packages = [
     { include = "pindo_cli" }
 ]
 
-[tool.black]
-exclude = '''
-/(
-    \.eggs
-  | \.git
-  | \.venv
-  | \.env
-  | build
-  | dist
-  | \.mypy_cache
-)\
-'''
+[tool.semantic_release]
+version_variable = [
+    "pindo_cli/__init__.py:__version__",
+    "pyproject.toml:version"
+]
+branch = "master"
+upload_to_pypi = true
+upload_to_release = true
+build_command = "pip install poetry && poetry build"
 
 [tool.poetry.dependencies]
 python = "^3.7"
@@ -52,10 +49,9 @@ tomlkit = "^0.7.0"
 coverage = {version = "^5.5", extras = ["toml"]}
 flake8 = "^3.9.2"
 flake8-bugbear = "^21.4.3"
-black = "^21.5b0"
 
 [tool.coverage.run]
-omit = [".*", "*/site-packages/*"]
+omit = [".*", "*/site-packages/*", "*/distutils/*", "*/tests/*"]
 
 [tool.coverage.report]
 fail_under = 100
@@ -65,4 +61,4 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-pindo = 'pindo_cli:cli'
+pindo = 'pindo_cli.cli:cli'
