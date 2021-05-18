@@ -1,14 +1,8 @@
+name: Continuous Integration
+
 on:
-  push:
-    branches: [master]
   pull_request:
     branches: [master]
-
-name: Build
-
-defaults:
-  run:
-    shell: bash
 
 jobs:
   build:
@@ -63,22 +57,6 @@ jobs:
         if: steps.cache-deps.cache-hit != 'true'
         run: |
           poetry config virtualenvs.in-project true
-          poetry update
           poetry install --no-interaction
       - name: Run tests
         run: poetry run pytest -v
-
-  Release:
-    needs: build
-    # https://github.community/t/how-do-i-specify-job-dependency-running-in-another-workflow/16482
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && !contains(github.event.head_commit.message, 'chore(release):')
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Python Semantic Release
-        uses: relekang/python-semantic-release@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          pypi_token: ${{ secrets.PYPI_TOKEN }}
