@@ -14,7 +14,6 @@ jobs:
   build:
     name: Build tool
     runs-on: ${{ matrix.os }}
-    needs: black-formatting-check
     strategy:
       matrix:
         os:
@@ -64,6 +63,7 @@ jobs:
         if: steps.cache-deps.cache-hit != 'true'
         run: |
           poetry config virtualenvs.in-project true
+          poetry update
           poetry install --no-interaction
       - name: Run tests
         run: poetry run pytest -v
