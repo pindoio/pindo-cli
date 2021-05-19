@@ -1,6 +1,6 @@
 # pindo-cli
 
-[![Tests Status](https://github.com/pindoio/pindo-cli/workflows/Tests/badge.svg?branch=master&event=push)](https://github.com/pindoio/pindo-cli/actions/workflows/ci.yaml?query=workflow%3ATests+branch%3Amaster+event%3Apush)
+[![Tests Status](https://github.com/pindoio/pindo-cli/workflows/Tests/badge.svg?branch=master&event=push)](https://github.com/pindoio/pindo-cli/actions/workflows/ci.yaml?query=workflow%3ATests+branch%3Amaster+event%3Apush
 ![fury](https://badge.fury.io/py/pindo-cli.svg)
 ![pipy](https://pypip.in/d/pindo-cli/badge.png)
 
