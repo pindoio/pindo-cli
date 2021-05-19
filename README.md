@@ -1,6 +1,6 @@
 # pindo-cli
 
-![travis](https://travis-ci.org/pindo-io/pindo-cli.svg?branch=master)
+![tests](https://github.com/pindoio/pindo-cli/actions/workflows/ci.yaml/badge.svg)
 ![fury](https://badge.fury.io/py/pindo-cli.svg)
 ![pipy](https://pypip.in/d/pindo-cli/badge.png)
 
@@ -8,7 +8,7 @@
 
 Install from PyPi using [pip](http://www.pip-installer.org/en/latest), a package manager for Python.
 
-`pip3 install pindo-cli`
+`pip install pindo-cli`
 
 Don't have pip installed? Try installing it, by running this from the command line:
 
@@ -28,10 +28,11 @@ pindo --help
 ```bash
 Usage: pindo [OPTIONS] COMMAND [ARGS]...
 
-  Pindo CLI
-
-  A simple Command Line Interface that allow you to create an account and
-  request a token for using Pindo API
+	Pindo CLI
+	
+    A simple Command Line Interface that allows you to authenticate with the Pindo API
+	
+	https://www.pindo.io
 
 Options:
   --debug / --no-debug

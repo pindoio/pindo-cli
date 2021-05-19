@@ -17,7 +17,7 @@ def test_pindo_cli(runner):
 
 
 def test_command_token(runner):
-    result = runner.invoke(pindo.token, ['-u', 'abc', '-p', 'cbd'])
+    result = runner.invoke(pindo.token, ['-u', 'abcd', '-p', 'cbd'])
     assert result.exit_code == 0
     assert 'message' in result.output
 
