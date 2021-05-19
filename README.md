@@ -1,6 +1,6 @@
 # pindo-cli
 
-![Tests](https://github.com/pindo/pindo-cli/actions/workflows/Tests/badge.svg)
+![Tests](https://github.com/pindo/pindo-cli/actions/workflows/ci.yaml/badge.svg)
 ![fury](https://badge.fury.io/py/pindo-cli.svg)
 ![pipy](https://pypip.in/d/pindo-cli/badge.png)
 
