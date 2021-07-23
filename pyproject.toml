@@ -39,7 +39,6 @@ python = "^3.7"
 click8 = "^8.0.1"
 requests = "^2.25.1"
 click-spinner = "^0.1.10"
-rich = "^10.6.0"
 tomlkit = "^0.7.0"
 
 [tool.poetry.dev-dependencies]

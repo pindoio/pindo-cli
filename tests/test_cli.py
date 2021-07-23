@@ -17,15 +17,15 @@ def test_pindo_cli(runner):
 
 
 def test_command_token(runner):
-    result = runner.invoke(pindo.token, ['-u', 'dgd', '-p', 'oUhdo'])
-    assert result.exit_code == 1
-    assert result.output is ''
+    result = runner.invoke(pindo.token, ['-u', 'abcd', '-p', 'cbd'])
+    assert result.exit_code == 0
+    assert 'message' in result.output
 
 
 def test_command_refresh_token(runner):
     result = runner.invoke(pindo.refresh_token, ['-u', 'abc', '-p', 'cbd'])
-    assert result.exit_code == 1
-    assert result.output is ''
+    assert result.exit_code == 0
+    assert 'message' in result.output
 
 
 def test_command_register(runner):
@@ -33,7 +33,7 @@ def test_command_register(runner):
         pindo.register,
         ['-u', 'ken', '-e', 'remy@bar.io', '-p', 'bar'])
     assert result.exit_code == 0
-    assert 'username already exists in the database' in result.output
+    assert 'message' in result.output
 
 
 def test_command_sms(runner):
@@ -48,13 +48,13 @@ def test_command_sms(runner):
     assert 'message' in result.output
 
 
-def test_command_balance(runner):
+def test_command_(runner):
     result = runner.invoke(
         pindo.balance, [
             '--token', 'oeiroeoeioeoiroe',
         ])
-    assert result.exit_code == 1
-    assert result.output is ''
+    assert result.exit_code == 0
+    assert 'message' in result.output
 
 
 def test_pindo_cli_version_flag(runner):
@@ -73,12 +73,3 @@ def test_command_org(runner):
         ])
     assert result.exit_code == 0
     assert 'message' in result.output
-
-
-def test_command_forget_password(runner):
-    result = runner.invoke(
-        pindo.forget_password, [
-            '--email', 'luinmeme@gmail.com'
-        ])
-    assert result.exit_code == 0
-    assert 'Wrong email' in result.output

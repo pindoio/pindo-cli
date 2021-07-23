@@ -24,7 +24,7 @@ class Token(Config):
         r = requests.get(
             self.url, auth=HTTPBasicAuth(self.username, self.password))
 
-        return '{}'.format(r.json()['token'])
+        return '{}'.format(r.json())
 
 
 class RefreshToken(Config):
@@ -41,7 +41,7 @@ class RefreshToken(Config):
         r = requests.get(
             self.url, auth=HTTPBasicAuth(self.username, self.password))
 
-        return '{}'.format(r.json()['token'])
+        return '{}'.format(r.json())
 
 
 class Register(Config):
@@ -62,46 +62,9 @@ class Register(Config):
         }
         r = requests.post(self.url, json=payload)
 
-        return '{}'.format(r.json()['message'])
+        return '{}'.format(r.json())
 
 
-class ForgetPassword(Config):
-    """
-    Forget Password
-    """
-    def __init__(self, email):
-        self.email = email
-        self.url = '{}/users/forgot'.format(Config.BASE_URL)
-
-    def resp(self):
-        payload = {
-            'email': self.email
-        }
-        r = requests.post(self.url, json=payload)
-
-        return r
-
-
-class RecoverPassword(Config):
-    """
-    Recover Password
-    """
-    def __init__(self, token, password, confirm_password):
-        self.token = token
-        self.password = password
-        self.confirm_password = confirm_password
-        self.url = '{}/users/recovery/{}'.format(Config.BASE_URL, self.token)
-
-    def __str__(self):
-        payload = {
-            'password': self.password,
-            'confirm_password': self.confirm_password
-        }
-        r = requests.put(self.url, json=payload)
-             
-        return '{}'.format(r.json()['message'])
-
-    
 class SMS(Config):
     """
     Send a test Message
@@ -114,7 +77,7 @@ class SMS(Config):
         self.sender = sender
         self.url = '{}/v1/sms/'.format(Config.BASE_URL)
 
-    def send(self):
+    def __str__(self):
         payload = {
             'to': self.to,
             'text': self.text,
@@ -129,7 +92,7 @@ class SMS(Config):
             json=payload
         )
 
-        return r.json()
+        return '{}'.format(r.json())
 
 
 class Balance(Config):
@@ -144,7 +107,7 @@ class Balance(Config):
         wallet_url = '{}/wallets/self'.format(Config.BASE_URL)
         r = requests.get(wallet_url, headers=headers)
 
-        return '{}'.format(r.json()['amount'])
+        return '{}'.format(r.json())
 
 
 class Organization(Config):

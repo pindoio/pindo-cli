@@ -58,4 +58,4 @@ jobs:
           poetry config virtualenvs.in-project true
           poetry install --no-interaction
       - name: Run tests
-        run: poetry run pytest -v --cov
+        run: poetry run pytest -v
