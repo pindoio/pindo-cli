@@ -28,11 +28,11 @@ pindo --help
 ```bash
 Usage: pindo [OPTIONS] COMMAND [ARGS]...
 
-	Pindo CLI
+Pindo CLI
 	
-    A simple Command Line Interface that allows you to authenticate with the Pindo API
+A simple Command Line Interface that allows you to authenticate with the Pindo API
 	
-	https://www.pindo.io
+https://www.pindo.io
 
 Options:
   --debug / --no-debug
