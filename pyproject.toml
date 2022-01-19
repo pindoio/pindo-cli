@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pindo-cli"
-version = "0.2.0"
+version = "0.2.1"
 description = "A simple Command Line Interface that allows you to authenticate with the Pindo API."
 authors = ["Team Pindo <team@pindo.io>"]
 license = "MIT"
