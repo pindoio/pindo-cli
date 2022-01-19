@@ -19,7 +19,7 @@ def test_pindo_cli(runner):
 def test_command_token(runner):
     result = runner.invoke(pindo.token, ['-u', 'dgd', '-p', 'oUhdo'])
     assert result.exit_code == 0
-    assert result.output is 'Wrong username or password'
+    assert result.output is 'Wrong username or password\n'
 
 
 def test_command_refresh_token(runner):
