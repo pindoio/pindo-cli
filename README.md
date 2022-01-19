@@ -365,7 +365,7 @@ Future main() async {
 ```
 
 
-- Generate a PIN
+- Generate a PIN.
 
 ```python
 
