@@ -36,8 +36,11 @@ def token(username, password):
     Request a token for using Pindo API.
     """
     with console.status(""):
-        token = Panel(str(Token(username, password)), title="API Token", expand=False)
-        console.print(token)
+        try:
+            token = Panel(str(Token(username, password)), title="API Token", expand=False)
+            console.print(token)
+        except KeyError:
+            console.print("Wrong username or password")
 
 
 @cli.command()  # @cli, not @click!

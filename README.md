@@ -109,7 +109,7 @@ Options:
 
 ```
 
-## API Usage
+## SMS API Usage
 
 The `pindo api` needs your Token. You can either pass the token directly to the constructor (see the code below) or via environment variables.
 
@@ -337,4 +337,203 @@ Future main() async {
   print(jsonDecode(response.body));
 }
 
+```
+
+## Verify API Usage
+
+`PindoVerfiy` API lets you send a PIN to a user's phone and validate that they received it. PindoVerfiy can be used for a number of authentication and anti-fraud purposes, such as 2-factor authentication, password-less sign-in, and validating users’ phone numbers.
+
+- An example of a successfully generated PIN.
+
+```json
+{
+    "message": "success",
+    "network": "63510",
+    "remaining_balance": 487.49,
+    "request_id": 4
+}
+```
+
+- An example of a successfully verified PIN.
+
+```
+{
+    "message": "success",
+    "remaining_balance": 487.49,
+    "request_id": 4
+}
+```
+
+
+- Generate a PIN
+
+```python
+
+# python
+
+import requests
+import json
+
+url = "https://api.pindo.io/v1/verify"
+
+payload = json.dumps({
+  "brand": "Pindo",
+  "number": "+250781234567"
+})
+headers = {
+  'Authorization': 'Bearer your-token',
+  'Content-Type': 'application/json'
+}
+
+response = requests.request("POST", url, headers=headers, data=payload)
+
+print(response.text)
+```
+
+
+```javascript
+
+// NodeJS
+
+var request = require('request');
+var options = {
+  'method': 'POST',
+  'url': 'https://api.pindo.io/v1/verify',
+  'headers': {
+    'Authorization': 'Bearer your-token',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    "brand": "Pindo",
+    "number": "+250781234567"
+  })
+
+};
+request(options, function (error, response) {
+  if (error) throw new Error(error);
+  console.log(response.body);
+});
+```
+
+
+```java
+
+// Java
+
+OkHttpClient client = new OkHttpClient().newBuilder()
+  .build();
+MediaType mediaType = MediaType.parse("application/json");
+RequestBody body = RequestBody.create(mediaType, "{\n    \"brand\":\"Pindo\",\n    \"number\":\"+250781234567\"\n}\n");
+Request request = new Request.Builder()
+  .url("https://api.pindo.io/v1/verify")
+  .method("POST", body)
+  .addHeader("Authorization", "Bearer your-token")
+  .addHeader("Content-Type", "application/json")
+  .build();
+Response response = client.newCall(request).execute();
+
+```
+
+```php
+
+// PHP
+
+<?php
+
+$curl = curl_init();
+
+curl_setopt_array($curl, array(
+  CURLOPT_URL => 'https://api.pindo.io/v1/verify',
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_ENCODING => '',
+  CURLOPT_MAXREDIRS => 10,
+  CURLOPT_TIMEOUT => 0,
+  CURLOPT_FOLLOWLOCATION => true,
+  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+  CURLOPT_CUSTOMREQUEST => 'POST',
+  CURLOPT_POSTFIELDS =>'{
+    "brand":"Pindo",
+    "number":"+250781234567"
+}
+',
+  CURLOPT_HTTPHEADER => array(
+    'Authorization: Bearer your-token',
+    'Content-Type: application/json'
+  ),
+));
+
+$response = curl_exec($curl);
+
+curl_close($curl);
+echo $response;
+
+```
+
+
+- Verify a PIN
+
+```javascript
+
+// NodeJS
+
+var request = require('request');
+var options = {
+  'method': 'POST',
+  'url': 'https://api.pindo.io/v1/verify/check',
+  'headers': {
+    'Authorization': 'Bearer your-token',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    "code": "752623",
+    "request_id": 4
+  })
+
+};
+request(options, function (error, response) {
+  if (error) throw new Error(error);
+  console.log(response.body);
+});
+
+```
+
+- Check PIN status
+
+```javascript
+
+// NodeJS 
+
+var request = require('request');
+var options = {
+  'method': 'GET',
+  'url': 'https://api.pindo.io/v1/verify/status/:request_id',
+  'headers': {
+    'Authorization': 'Bearer your-token'
+  }
+};
+request(options, function (error, response) {
+  if (error) throw new Error(error);
+  console.log(response.body);
+});
+
+```
+
+- Cancel a PIN
+
+```javascript
+
+// NodeJS
+
+var request = require('request');
+var options = {
+  'method': 'PUT',
+  'url': 'https://api.pindo.io/v1/verify/cancel/:request_id',
+  'headers': {
+    'Authorization': 'Bearer your-token'
+  }
+};
+request(options, function (error, response) {
+  if (error) throw new Error(error);
+  console.log(response.body);
+});
 ```
