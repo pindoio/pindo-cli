@@ -259,7 +259,24 @@ func main() {
 
 url := "https://api.pindo.io/v1/sms/"
 
-payload := strings.NewReader("{"to" : "+250781234567", "text" : "Hello from Pindo","sender" : "Pindo"}")
+smsData := struct {
+        To     string `json:"to"`
+        Text   string `json:"text"`
+        Sender string `json:"sender"`
+}{
+        To:     "+250781234567",
+        Text:   "Hello from Pindo",
+        Sender: "Pindo",
+}
+
+// Use the json package for a better conversion to prevent special characters from breaking the json
+bs, err := json.Marshal(smsData)
+
+if err != nil {
+   // Handle the conversion error
+}
+
+payload := strings.NewReader(string(bs))
 
 req, _ := http.NewRequest("POST", url, payload)
 
