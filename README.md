@@ -97,7 +97,7 @@ Options:
 }
 ```
 
-- Pindo Webhook Event example `POST` methods
+- Pindo Delivery Report (DLR) Webhook Event example `POST` methods
 
 ```json
 {
@@ -338,6 +338,54 @@ Future main() async {
 }
 
 ```
+
+## Inbound SMS API Usage
+
+Pindo Inbound messaging allows you to have two-way SMS communication. By quickly setting up a Webhook URL in Pindo's dashboard, you will receive any event on your configured short or long code.
+
+- Pindo Inbound Webhook Event example `POST` methods
+
+```json
+{
+    "from": "+25078123456",
+    "to": "7878",
+    "created_at": "24-07-2020, 23:35:32",
+    "sms_id": 1058918,
+    "text": "Hello from Pindo",
+    "telco": "MTN"
+}
+
+```
+- List All Inbound SMS
+
+```json
+{
+   "inbound_sms":[
+      {
+         "account_id":11783,
+         "conversation_id":null,
+         "created_at":"2022-08-05T12:32:42.196907",
+         "id":20,
+         "id_smsc":null,
+         "inbound_sms_number":"+250781113333",
+         "language_id":null,
+         "telco_id":null,
+         "text":"Hello world !"
+      }
+   ],
+   "pages":{
+      "first_url":"http://api.pindo.io/v1/sms/inbounds?page=1&per_page=20",
+      "last_url":"http://api.pindo.io/v1/sms/inbounds?page=1&per_page=20",
+      "next_url":null,
+      "page":1,
+      "pages":1,
+      "per_page":20,
+      "prev_url":null,
+      "total":20
+   }
+}
+```
+
 
 ## Verify API Usage
 
