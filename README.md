@@ -80,20 +80,16 @@ Options:
 
 ```json
 {
-    "count": 1,
-    "remaining_balance": 3.11,
-	"sms_id":"1058918",
-    "self_url": "https://api.pindo.io/v1/sms/1058918",
-    "sms_items": [
-        {
-            "id": 1062502,
-            "item_price": 0.01,
-            "network": "63510",
-            "remaining_balance": 3.11,
-            "status": "sent",
-            "to": "+250785000000"
-        }
-    ]
+	"bonus": 0.0,
+	"discount": 0.4,
+	"item_count": 1,
+	"item_price": 0.006,
+	"remaining_balance": 71421.953,
+	"self_url": "http://api.pindo.io/v1/sms/out_sms_01H7DJEJ1YZKTNT8EDXY2C7YG9",
+	"sms_id": "out_sms_01H7DJEJ1YZKTNT8EDXY2C7YG9",
+	"status": "sent",
+	"to": "+250789385878",
+	"total_cost": 0.006
 }
 ```
 
