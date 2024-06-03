@@ -113,6 +113,7 @@ The `pindo api` needs your Token. You can either pass the token directly to the 
 
 # cURL
 
+# Send a single sms
 curl -X POST \
 https://api.pindo.io/v1/sms/ \
 -H 'Accept: */*' \
@@ -121,6 +122,18 @@ https://api.pindo.io/v1/sms/ \
 -d '{
 "to" : "+250781234567",
 "text" : "Hello from Pindo",
+"sender" : "Pindo"
+}'
+
+# Send bulk sms
+curl -X POST \
+https://api.pindo.io/v1/sms/bulk \
+-H 'Accept: */*' \
+-H 'Authorization: Bearer your-token' \
+-H 'Content-Type: application/json' \
+-d '{
+"recipients" : [{"phonenumber": "+250781234567", "name": "Remy Muhire"}],
+"text" : "Hello @contact.name, Welcome to Pindo",
 "sender" : "Pindo"
 }'
 ```
@@ -133,9 +146,14 @@ import requests
 
 token='your-token'
 headers = {'Authorization': 'Bearer ' + token}
+# For single sms
 data = {'to' : '+250781234567', 'text' : 'Hello from Pindo', 'sender' : 'Pindo'}
-
 url = 'https://api.pindo.io/v1/sms/'
+
+# For bulk sms
+data = {'recipients' : [{'phonenumber': '+250781234567', 'name': 'Remy Muhire'}], 'text' : 'Hello @contact.name, Welcome to Pindo', 'sender' : 'Pindo'}
+url = 'https://api.pindo.io/v1/sms/bulk'
+
 response = requests.post(url, json=data, headers=headers)
 print(response)
 print(response.json())
@@ -146,13 +164,20 @@ print(response.json())
 // NodeJS
 
 var request = require("request");
+// For single sms
 data = { to: "+250781234567", text: "Hello from Pindo", sender: "Pindo" };
+url = 'https://api.pindo.io/v1/sms/'
+
+// For bulk sms
+data = { recipients: [{phonenumber: "+250781234567", name: "Remy Muhire"}], text: "Hello @contact.name, Welcome to Pindo", sender: "Pindo" };
+url = 'https://api.pindo.io/v1/sms/bulk'
+
 
 var options = {
   method: "POST",
   body: data,
   json: true,
-  url: "https://api.pindo.io/v1/sms/",
+  url: url,
   headers: {
     Authorization: "Bearer your-token"
   }
@@ -175,9 +200,16 @@ request(options, callback);
 OkHttpClient client = new OkHttpClient();
 
 MediaType mediaType = MediaType.parse("application/json");
+// For single sms
 RequestBody body = RequestBody.create(mediaType, "{"to" : "+250781234567", "text" : "Hello from Pindo","sender" : "Pindo"}");
+String url = "https://api.pindo.io/v1/sms/";
+
+// For bulk sms
+RequestBody body = RequestBody.create(mediaType, "{"recipients": [{"phonenumber": "+250781234567", "name": "Remy Muhire"}], "text": "Hello @contact.name, Welcome to Pindo", "sender": "Pindo"}");
+String url = "https://api.pindo.io/v1/sms/bulk";
+
 Request request = new Request.Builder()
-.url("https://api.pindo.io/v1/sms/")
+.url(url)
 .post(body)
 .addHeader("Content-Type", "application/json")
 .addHeader("Authorization", "Bearer your-token")
@@ -190,7 +222,6 @@ Response response = client.newCall(request).execute();
 // PHP
 
 $request = new HttpRequest();
-$request->setUrl('https://api.pindo.io/v1/sms/');
 $request->setMethod(HTTP_METH_POST);
 
 $request->setHeaders(array(
@@ -198,10 +229,20 @@ $request->setHeaders(array(
 'Content-Type' => 'application/json'
 ));
 
+// For single sms
+$request->setUrl('https://api.pindo.io/v1/sms/');
 $request->setBody('{
 "to" : "+250781234567",
 "text" : "Hello from Pindo",
 "sender" : "Pindo"
+}');
+
+// For bulk sms
+$request->setUrl('https://api.pindo.io/v1/sms/bulk');
+$request->setBody('{
+  "recipients": [{"phonenumber": "+250781234567", "name": "Remy Muhire"}],
+  "text": "Hello @contact.name, Welcome to Pindo",
+  "sender": "Pindo"
 }');
 
 try {
@@ -252,10 +293,15 @@ import (
 )
 
 func main() {
-
+// For single sms
 url := "https://api.pindo.io/v1/sms/"
 
 payload := strings.NewReader("{"to" : "+250781234567", "text" : "Hello from Pindo","sender" : "Pindo"}")
+
+// For bulk sms
+url := "https://api.pindo.io/v1/sms/bulk"
+
+payload := strings.NewReader("{"recipients" : [{"phonenumber": "+250781234567", "name": "Remy Muhire"}], "text" : "Hello @contact.name, Welcome to Pindo","sender" : "Pindo"}")
 
 req, _ := http.NewRequest("POST", url, payload)
 
@@ -277,11 +323,16 @@ fmt.Println(string(body))
 
 // C#
 
-var client = new RestClient("https://api.pindo.io/v1/sms/");
 var request = new RestRequest(Method.POST);
 request.AddHeader("Authorization", "Bearer your-token");
 request.AddHeader("Content-Type", "application/json");
+// For single sms
 request.AddParameter("undefined", "{\n\t\"to\" : \"+250781234567\", \n\t\"text\" : \"Hello from Pindo\",\n\t\"sender\" : \"Pindo\"\n}", ParameterType.RequestBody);
+var client = new RestClient("https://api.pindo.io/v1/sms/");
+
+// For bulk sms
+request.AddParameter("undefined", "{\n\t\"recipients\": [{\"phonenumber\": \"+250781234567\", \"name\": \"Remy Muhire\"}], \n\t\"text\": \"Hello @contact.name, Welcome to Pindo\",\n\t\"sender\": \"Pindo\"\n}", ParameterType.RequestBody);
+var client = new RestClient("https://api.pindo.io/v1/sms/bulk");
 IRestResponse response = client.Execute(request);
 ```
 
@@ -291,10 +342,15 @@ IRestResponse response = client.Execute(request);
 require 'net/http'
 require 'json'
 require 'uri'
-
+# For single sms
 data = { to: '+250781234567', text: 'Hello from Pindo', sender: 'Pindo' };
 
 uri = URI('https://api.pindo.io/v1/sms/')
+
+# For bulk sms
+data = { recipients: [{phonenumber: '+250781234567', name: 'Remy Muhire'}], text: 'Hello @contact.name, Welcome to Pindo', sender: 'Pindo' };
+
+uri = URI('https://api.pindo.io/v1/sms/bulk')
 http = Net::HTTP.new(uri.host, uri.port)
 req = Net::HTTP::Post.new(uri)
 req['Authorization'] = 'Bearer your-token'
@@ -312,10 +368,19 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 Future main() async {
+  // For single sms
   String url = 'https://api.pindo.io/v1/sms/';
   Map<String, String> data = {
     'to': '+250781234567',
     'text': 'Hello from Pindo',
+    'sender': 'Pindo'
+  };
+  
+  // For bulk sms
+  String url = 'https://api.pindo.io/v1/sms/bulk';
+  Map<String, String> data = {
+    'recipients': [{'phonenumber': '+250781234567', 'name': 'Remy Muhire'}],
+    'text': 'Hello @contact.name, Welcome to Pindo',
     'sender': 'Pindo'
   };
 
