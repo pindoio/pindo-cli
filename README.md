@@ -483,7 +483,7 @@ Pindo Inbound messaging allows you to have two-way SMS communication. By quickly
 import requests
 import json
 
-url = "https://api.pindo.io/v1/verify"
+url = "https://api.pindo.io/v1/sms/verify"
 
 payload = json.dumps({
   "brand": "Pindo",
@@ -507,7 +507,7 @@ print(response.json())
 var request = require('request');
 var options = {
   'method': 'POST',
-  'url': 'https://api.pindo.io/v1/verify',
+  'url': 'https://api.pindo.io/v1/sms/verify',
   'headers': {
     'Authorization': 'Bearer your-token',
     'Content-Type': 'application/json'
@@ -534,7 +534,7 @@ OkHttpClient client = new OkHttpClient().newBuilder()
 MediaType mediaType = MediaType.parse("application/json");
 RequestBody body = RequestBody.create(mediaType, "{\n    \"brand\":\"Pindo\",\n    \"number\":\"+250781234567\"\n}\n");
 Request request = new Request.Builder()
-  .url("https://api.pindo.io/v1/verify")
+  .url("https://api.pindo.io/v1/sms/verify")
   .method("POST", body)
   .addHeader("Authorization", "Bearer your-token")
   .addHeader("Content-Type", "application/json")
@@ -552,7 +552,7 @@ Response response = client.newCall(request).execute();
 $curl = curl_init();
 
 curl_setopt_array($curl, array(
-  CURLOPT_URL => 'https://api.pindo.io/v1/verify',
+  CURLOPT_URL => 'https://api.pindo.io/v1/sms/verify',
   CURLOPT_RETURNTRANSFER => true,
   CURLOPT_ENCODING => '',
   CURLOPT_MAXREDIRS => 10,
@@ -588,7 +588,7 @@ echo $response;
 var request = require('request');
 var options = {
   'method': 'POST',
-  'url': 'https://api.pindo.io/v1/verify/check',
+  'url': 'https://api.pindo.io/v1/sms/verify/check',
   'headers': {
     'Authorization': 'Bearer your-token',
     'Content-Type': 'application/json'
@@ -615,7 +615,7 @@ request(options, function (error, response) {
 var request = require('request');
 var options = {
   'method': 'GET',
-  'url': 'https://api.pindo.io/v1/verify/status/:request_id',
+  'url': 'https://api.pindo.io/v1/sms/verify/status/:request_id',
   'headers': {
     'Authorization': 'Bearer your-token'
   }
@@ -636,7 +636,7 @@ request(options, function (error, response) {
 var request = require('request');
 var options = {
   'method': 'PUT',
-  'url': 'https://api.pindo.io/v1/verify/cancel/:request_id',
+  'url': 'https://api.pindo.io/v1/sms/verify/cancel/:request_id',
   'headers': {
     'Authorization': 'Bearer your-token'
   }
