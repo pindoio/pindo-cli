@@ -22,17 +22,16 @@ You may need to run the above commands with `sudo`.
 
 Once you have installed **Pindo CLI** you're ready to go.
 
-```bash
+```bash 
 pindo --help
 ```
-
 ```bash
 Usage: pindo [OPTIONS] COMMAND [ARGS]...
 
 Pindo CLI
-
+	
 A simple Command Line Interface that allows you to authenticate with the Pindo API
-
+	
 https://www.pindo.io
 
 Options:
@@ -48,13 +47,11 @@ Commands:
   sms            Send a test message
   token          Request a token for using Pindo API.
 ```
-
 - Send a test message
 
-```bash
+```bash 
 pindo sms --help
 ```
-
 ```bash
 Usage: pindo sms [OPTIONS]
 
@@ -70,30 +67,30 @@ Options:
 
 ## API Response Code
 
-| **Code** | **Text**     | **Meaning**                                                                                                                         |
-| -------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
-| 201      | sent         | Successfully sent                                                                                                                   |
-| 401      | unauthorized | unauthorized access                                                                                                                 |
-| 404      | not found    | invalid resource URI                                                                                                                |
-| 409      | conflict     | number is from unsupported country                                                                                                  |
-| 409      | conflict     | number is from unsupported telco                                                                                                    |
-| 409      | conflict     | Wrong phone number format                                                                                                           |
-| 409      | conflict     | Unknown sender ID(name) – the sender ID used is not recognized or not registered with the SMS provider even if the token is correct |
+| **Code** | **Text** | **Meaning** |
+---| --- | ---
+201 | sent | Successfully sent
+401 | unauthorized | unauthorized access
+404 | not found | invalid resource URI
+409 | conflict | number is from unsupported country
+409 | conflict | number is from unsupported telco
+409 | conflict | Wrong phone number format
+409 | conflict | Unknown sender ID(name) – the sender ID used is not recognized or not registered with the SMS provider even if the token is correct
 
 - An example of a successfully sent SMS.
 
 ```json
 {
-  "bonus": 0.0,
-  "discount": 0.4,
-  "item_count": 1,
-  "item_price": 0.006,
-  "remaining_balance": 71421.953,
-  "self_url": "http://api.pindo.io/v1/sms/out_sms_01H7DJEJ1YZKTNT8EDXY2C7YG9",
-  "sms_id": "out_sms_01H7DJEJ1YZKTNT8EDXY2C7YG9",
-  "status": "sent",
-  "to": "+250789385878",
-  "total_cost": 0.006
+	"bonus": 0.0,
+	"discount": 0.4,
+	"item_count": 1,
+	"item_price": 0.006,
+	"remaining_balance": 71421.953,
+	"self_url": "http://api.pindo.io/v1/sms/out_sms_01H7DJEJ1YZKTNT8EDXY2C7YG9",
+	"sms_id": "out_sms_01H7DJEJ1YZKTNT8EDXY2C7YG9",
+	"status": "sent",
+	"to": "+250789385878",
+	"total_cost": 0.006
 }
 ```
 
@@ -101,11 +98,12 @@ Options:
 
 ```json
 {
-  "status": "DELIVRD",
-  "sms_id": 1058918,
-  "modified_at": "24-07-2020, 23:35:32",
-  "retries_count": 0
+    "status": "DELIVRD",
+    "sms_id": 1058918,
+    "modified_at": "24-07-2020, 23:35:32",
+    "retries_count": 0
 }
+
 ```
 
 ## SMS API Usage
@@ -169,15 +167,12 @@ print(response.json())
 var request = require("request");
 // For single sms
 data = { to: "+250781234567", text: "Hello from Pindo", sender: "Pindo" };
-url = "https://api.pindo.io/v1/sms/";
+url = 'https://api.pindo.io/v1/sms/'
 
 // For bulk sms
-data = {
-  recipients: [{ phonenumber: "+250781234567", name: "Remy Muhire" }],
-  text: "Hello @contact.name, Welcome to Pindo",
-  sender: "Pindo",
-};
-url = "https://api.pindo.io/v1/sms/bulk";
+data = { recipients: [{phonenumber: "+250781234567", name: "Remy Muhire"}], text: "Hello @contact.name, Welcome to Pindo", sender: "Pindo" };
+url = 'https://api.pindo.io/v1/sms/bulk'
+
 
 var options = {
   method: "POST",
@@ -185,8 +180,8 @@ var options = {
   json: true,
   url: url,
   headers: {
-    Authorization: "Bearer your-token",
-  },
+    Authorization: "Bearer your-token"
+  }
 };
 
 function callback(error, response, body) {
@@ -381,7 +376,7 @@ Future main() async {
     'text': 'Hello from Pindo',
     'sender': 'Pindo'
   };
-
+  
   // For bulk sms
   String url = 'https://api.pindo.io/v1/sms/bulk';
   Map<String, String> data = {
@@ -414,44 +409,45 @@ Pindo Inbound messaging allows you to have two-way SMS communication. By quickly
 
 ```json
 {
-  "from": "+25078123456",
-  "to": "7878",
-  "created_at": "24-07-2020, 23:35:32",
-  "sms_id": 1058918,
-  "text": "Hello from Pindo",
-  "telco": "MTN"
+    "from": "+25078123456",
+    "to": "7878",
+    "created_at": "24-07-2020, 23:35:32",
+    "sms_id": 1058918,
+    "text": "Hello from Pindo",
+    "telco": "MTN"
 }
-```
 
+```
 - List All Inbound SMS
 
 ```json
 {
-  "inbound_sms": [
-    {
-      "account_id": 11783,
-      "conversation_id": null,
-      "created_at": "2022-08-05T12:32:42.196907",
-      "id": 20,
-      "id_smsc": null,
-      "inbound_sms_number": "+250781113333",
-      "language_id": null,
-      "telco_id": null,
-      "text": "Hello world !"
-    }
-  ],
-  "pages": {
-    "first_url": "http://api.pindo.io/v1/sms/inbounds?page=1&per_page=20",
-    "last_url": "http://api.pindo.io/v1/sms/inbounds?page=1&per_page=20",
-    "next_url": null,
-    "page": 1,
-    "pages": 1,
-    "per_page": 20,
-    "prev_url": null,
-    "total": 20
-  }
+   "inbound_sms":[
+      {
+         "account_id":11783,
+         "conversation_id":null,
+         "created_at":"2022-08-05T12:32:42.196907",
+         "id":20,
+         "id_smsc":null,
+         "inbound_sms_number":"+250781113333",
+         "language_id":null,
+         "telco_id":null,
+         "text":"Hello world !"
+      }
+   ],
+   "pages":{
+      "first_url":"http://api.pindo.io/v1/sms/inbounds?page=1&per_page=20",
+      "last_url":"http://api.pindo.io/v1/sms/inbounds?page=1&per_page=20",
+      "next_url":null,
+      "page":1,
+      "pages":1,
+      "per_page":20,
+      "prev_url":null,
+      "total":20
+   }
 }
 ```
+
 
 ## Verify API Usage
 
@@ -461,10 +457,10 @@ Pindo Inbound messaging allows you to have two-way SMS communication. By quickly
 
 ```json
 {
-  "message": "success",
-  "network": "63510",
-  "remaining_balance": 487.49,
-  "request_id": 4
+    "message": "success",
+    "network": "63510",
+    "remaining_balance": 487.49,
+    "request_id": 4
 }
 ```
 
@@ -477,6 +473,7 @@ Pindo Inbound messaging allows you to have two-way SMS communication. By quickly
     "request_id": 4
 }
 ```
+
 
 - Generate a PIN.
 
@@ -503,27 +500,31 @@ response = requests.request("POST", url, headers=headers, data=payload)
 print(response.json())
 ```
 
+
 ```javascript
+
 // NodeJS
 
-var request = require("request");
+var request = require('request');
 var options = {
-  method: "POST",
-  url: "https://api.pindo.io/v1/sms/verify",
-  headers: {
-    Authorization: "Bearer your-token",
-    "Content-Type": "application/json",
+  'method': 'POST',
+  'url': 'https://api.pindo.io/v1/sms/verify',
+  'headers': {
+    'Authorization': 'Bearer your-token',
+    'Content-Type': 'application/json'
   },
   body: JSON.stringify({
-    brand: "Pindo",
-    number: "+250781234567",
-  }),
+    "brand": "Pindo",
+    "number": "+250781234567"
+  })
+
 };
 request(options, function (error, response) {
   if (error) throw new Error(error);
   console.log(response.body);
 });
 ```
+
 
 ```java
 
@@ -578,61 +579,68 @@ echo $response;
 
 ```
 
+
 - Verify a PIN
 
 ```javascript
+
 // NodeJS
 
-var request = require("request");
+var request = require('request');
 var options = {
-  method: "POST",
-  url: "https://api.pindo.io/v1/sms/verify/check",
-  headers: {
-    Authorization: "Bearer your-token",
-    "Content-Type": "application/json",
+  'method': 'POST',
+  'url': 'https://api.pindo.io/v1/sms/verify/check',
+  'headers': {
+    'Authorization': 'Bearer your-token',
+    'Content-Type': 'application/json'
   },
   body: JSON.stringify({
-    code: "752623",
-    request_id: 4,
-  }),
+    "code": "752623",
+    "request_id": 4
+  })
+
 };
 request(options, function (error, response) {
   if (error) throw new Error(error);
   console.log(response.body);
 });
+
 ```
 
 - Check PIN status
 
 ```javascript
-// NodeJS
 
-var request = require("request");
+// NodeJS 
+
+var request = require('request');
 var options = {
-  method: "GET",
-  url: "https://api.pindo.io/v1/sms/verify/status/:request_id",
-  headers: {
-    Authorization: "Bearer your-token",
-  },
+  'method': 'GET',
+  'url': 'https://api.pindo.io/v1/sms/verify/status/:request_id',
+  'headers': {
+    'Authorization': 'Bearer your-token'
+  }
 };
 request(options, function (error, response) {
   if (error) throw new Error(error);
   console.log(response.body);
 });
+
 ```
 
 - Cancel a PIN
 
 ```javascript
+
 // NodeJS
 
-var request = require("request");
+var request = require('request');
 var options = {
-  method: "PUT",
-  url: "https://api.pindo.io/v1/sms/verify/cancel/:request_id",
-  headers: {
-    Authorization: "Bearer your-token",
-  },
+  'method': 'PUT',
+  'url': 'https://api.pindo.io/v1/sms/verify/cancel/:request_id',
+  'headers': {
+    'Authorization': 'Bearer your-token'
+  }
 };
 request(options, function (error, response) {
   if (error) throw new Error(error);
