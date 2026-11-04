@@ -112,3 +112,8 @@ ENV/
 */.pytest_cache
 celerybeat-schedule
 Pipfile*
+# Tooling
+.ruff_cache/
+.mypy_cache/
+.coverage*
+coverage.xml
