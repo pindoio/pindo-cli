@@ -33,6 +33,8 @@ dependencies = [
     "urllib3>=2.8.0,<3",
     "rich>=13.9,<16",
     "tomlkit>=0.13,<1",
+    # Windows has no system timezone database; zoneinfo needs this for --tz.
+    "tzdata>=2024.1; sys_platform == 'win32'",
 ]
 
 [project.urls]

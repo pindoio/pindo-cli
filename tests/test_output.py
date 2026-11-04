@@ -106,7 +106,7 @@ def test_render_table_empty_caption():
 def test_render_table_to_file(tmp_path):
     path = tmp_path / 'out.txt'
     render(ROWS, COLS, 'table', file=str(path))
-    assert 'ID' in path.read_text()
+    assert 'ID' in path.read_text(encoding='utf-8')
 
 
 def test_render_csv(capsys):
@@ -131,7 +131,7 @@ def test_render_json_raw_to_file(tmp_path):
     path = tmp_path / 'out.json'
     rows = [{'id': 1, 'when': datetime(2026, 1, 1, tzinfo=timezone.utc), 'extra': True}]
     render(rows, COLS[:1], 'json', file=str(path), raw_json=True)
-    data = json.loads(path.read_text())
+    data = json.loads(path.read_text(encoding='utf-8'))
     assert data == [{'id': 1, 'when': '2026-01-01T00:00:00+00:00', 'extra': True}]
 
 
