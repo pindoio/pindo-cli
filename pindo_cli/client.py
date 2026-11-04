@@ -1,0 +1,261 @@
+"""
+HTTP client for the Pindo API.
+
+Every CLI command talks to the backend through :class:`PindoClient`, which
+owns a single ``requests.Session``, attaches the bearer token, applies a
+timeout, logs requests when ``--debug`` is on, and converts any failure
+(network error, non-2xx status, malformed JSON) into
+:class:`PindoClientException` with a human-readable message.
+
+Endpoint paths live in :data:`ENDPOINTS` so that a backend route change is a
+one-line fix here rather than a hunt through the command code.
+"""
+import json
+import logging
+from typing import Any, Dict, Iterator, Optional, Tuple
+
+import requests
+from requests.auth import HTTPBasicAuth
+
+from pindo_cli import __version__
+from pindo_cli.config import DEFAULT_BASE_URL
+
+log = logging.getLogger('pindo_cli')
+
+DEFAULT_TIMEOUT = 30  # seconds
+
+ENDPOINTS = {
+    # authentication / account
+    'token': '/users/token',
+    'refresh_token': '/users/refresh/token',
+    'register': '/users/register',
+    'forgot_password': '/users/forgot',
+    'recover_password': '/users/recovery/{token}',
+    # messaging
+    'sms_send': '/v1/sms/',
+    # account resources
+    'wallet': '/wallets/self',
+    'organization': '/orgs/self',
+}
+
+
+class PindoClientException(Exception):
+    """Any error talking to the Pindo API, with a message safe to show users."""
+
+    def __init__(self, message: str, status_code: Optional[int] = None,
+                 payload: Any = None, url: Optional[str] = None):
+        super().__init__(message, status_code, payload, url)
+        self.message = message
+        self.status_code = status_code
+        self.payload = payload
+        self.url = url
+
+    def __str__(self) -> str:
+        if self.status_code:
+            return '{} (HTTP {})'.format(self.message, self.status_code)
+        return self.message
+
+
+def _extract_message(payload: Any, default: str) -> str:
+    """Pull the most useful error text out of an API error body."""
+    if isinstance(payload, dict):
+        for key in ('message', 'error', 'detail', 'msg'):
+            value = payload.get(key)
+            if isinstance(value, str) and value:
+                return value
+            if isinstance(value, dict):
+                # e.g. {"message": {"username": "already exists"}}
+                return '; '.join('{}: {}'.format(k, v) for k, v in value.items())
+        if payload:
+            return json.dumps(payload)
+    if isinstance(payload, str) and payload.strip():
+        return payload.strip()[:200]
+    return default
+
+
+class PindoClient:
+    """Thin wrapper over the Pindo REST API."""
+
+    def __init__(self, base_url: str = DEFAULT_BASE_URL, token: Optional[str] = None,
+                 timeout: float = DEFAULT_TIMEOUT, session: Optional[requests.Session] = None):
+        self.base_url = base_url.rstrip('/')
+        self.token = token
+        self.timeout = timeout
+        self.session = session or requests.Session()
+        self.session.headers.update({
+            'Accept': 'application/json',
+            'User-Agent': 'pindo-cli/{}'.format(__version__),
+        })
+
+    # ------------------------------------------------------------------ core
+
+    def url(self, path: str, **fmt) -> str:
+        if path.startswith('http://') or path.startswith('https://'):
+            return path
+        return self.base_url + path.format(**fmt)
+
+    def _request(self, method: str, path: str, *, auth: Optional[HTTPBasicAuth] = None,
+                 json_body: Optional[dict] = None, params: Optional[dict] = None,
+                 authenticated: bool = True, **fmt) -> Any:
+        """Perform a request and return the decoded JSON body.
+
+        Raises :class:`PindoClientException` on network errors, non-2xx
+        responses, or bodies that are not JSON.
+        """
+        url = self.url(path, **fmt)
+        headers: Dict[str, str] = {}
+        if authenticated and auth is None:
+            if not self.token:
+                raise PindoClientException('No API token configured.', url=url)
+            headers['Authorization'] = 'Bearer ' + self.token
+
+        log.debug('%s %s params=%s body=%s', method, url, params, json_body)
+        try:
+            resp = self.session.request(
+                method, url, auth=auth, json=json_body, params=params,
+                headers=headers, timeout=self.timeout)
+        except requests.exceptions.Timeout:
+            raise PindoClientException(
+                'The request to {} timed out after {}s.'.format(url, self.timeout), url=url)
+        except requests.exceptions.ConnectionError:
+            raise PindoClientException(
+                'Could not connect to {}. Check your network or PINDO_BASE_URL.'.format(
+                    self.base_url), url=url)
+        except requests.exceptions.RequestException as exc:  # pragma: no cover
+            raise PindoClientException('Request failed: {}'.format(exc), url=url)
+
+        log.debug('-> HTTP %s %s', resp.status_code, resp.text[:2000])
+        return _decode_response(resp, url)
+
+    def get(self, path: str, params: Optional[dict] = None, **kw) -> Any:
+        return self._request('GET', path, params=params, **kw)
+
+    def post(self, path: str, json_body: Optional[dict] = None, **kw) -> Any:
+        return self._request('POST', path, json_body=json_body, **kw)
+
+    def put(self, path: str, json_body: Optional[dict] = None, **kw) -> Any:
+        return self._request('PUT', path, json_body=json_body, **kw)
+
+    # ------------------------------------------------------------ pagination
+
+    def get_page(self, path: str, params: Optional[dict] = None,
+                 items_key: Optional[str] = None) -> Tuple[list, dict]:
+        """Fetch one page and return ``(items, pages)``.
+
+        The Pindo API wraps lists as ``{"<items_key>": [...], "pages": {...}}``
+        where ``pages`` carries ``page``, ``pages``, ``per_page``, ``total`` and
+        ``next_url``. When ``items_key`` is omitted the first list value in
+        the body is used. A bare JSON list is also accepted.
+        """
+        body = self.get(path, params=params)
+        if isinstance(body, list):
+            return body, {}
+        if not isinstance(body, dict):
+            return [], {}
+        if items_key is None:
+            items_key = next(
+                (k for k, v in body.items() if isinstance(v, list)), None)
+        items = body.get(items_key, []) if items_key else []
+        return list(items), dict(body.get('pages') or {})
+
+    def iter_pages(self, path: str, params: Optional[dict] = None,
+                   items_key: Optional[str] = None,
+                   max_pages: Optional[int] = None) -> Iterator[Any]:
+        """Yield items across all pages, following ``pages.next_url``."""
+        params = dict(params or {})
+        fetched = 0
+        next_path: Optional[str] = path
+        while next_path:
+            items, pages = self.get_page(next_path, params=params, items_key=items_key)
+            for item in items:
+                yield item
+            fetched += 1
+            if max_pages is not None and fetched >= max_pages:
+                return
+            next_path = pages.get('next_url') or None
+            # next_url already encodes page/per_page; don't resend them.
+            params = {}
+            if not items:
+                return
+
+    # ---------------------------------------------------------- auth / user
+
+    def get_token(self, username: str, password: str) -> str:
+        body = self.get(ENDPOINTS['token'], auth=HTTPBasicAuth(username, password))
+        return _require_key(body, 'token')
+
+    def refresh_token(self, username: str, password: str) -> str:
+        body = self.get(ENDPOINTS['refresh_token'], auth=HTTPBasicAuth(username, password))
+        return _require_key(body, 'token')
+
+    def register(self, username: str, email: str, password: str) -> str:
+        body = self.post(ENDPOINTS['register'], json_body={
+            'username': username, 'email': email, 'password': password,
+        }, authenticated=False)
+        return _require_key(body, 'message')
+
+    def forgot_password(self, email: str) -> Any:
+        return self.post(ENDPOINTS['forgot_password'], json_body={'email': email},
+                         authenticated=False)
+
+    def recover_password(self, token: str, password: str, confirm_password: str) -> str:
+        body = self.put(ENDPOINTS['recover_password'], json_body={
+            'password': password, 'confirm_password': confirm_password,
+        }, authenticated=False, token=token)
+        return _require_key(body, 'message')
+
+    # ----------------------------------------------------------- messaging
+
+    def send_sms(self, to: str, text: str, sender: str) -> dict:
+        return self.post(ENDPOINTS['sms_send'], json_body={
+            'to': to, 'text': text, 'sender': sender,
+        })
+
+    # ------------------------------------------------------------- account
+
+    def wallet(self) -> dict:
+        return self.get(ENDPOINTS['wallet'])
+
+    def balance(self) -> Any:
+        return _require_key(self.wallet(), 'amount')
+
+    def update_organization(self, name: str, webhook_url: str, sms_retries: int) -> dict:
+        return self.put(ENDPOINTS['organization'], json_body={
+            'name': name, 'webhook_url': webhook_url, 'sms_retries': sms_retries,
+        })
+
+
+_STATUS_MESSAGES = {
+    401: 'Unauthorized. Your token is invalid or expired; run `pindo login`.',
+    403: 'Forbidden. Your account is not allowed to do this.',
+    404: 'Not found.',
+    409: 'Conflict.',
+}
+
+
+def _decode_response(resp: requests.Response, url: str) -> Any:
+    """Decode a JSON body, raising a clean exception for errors."""
+    payload: Any
+    try:
+        payload = resp.json() if resp.content else None
+    except ValueError:
+        payload = resp.text
+
+    if not resp.ok:
+        default = _STATUS_MESSAGES.get(resp.status_code, 'The Pindo API returned an error.')
+        raise PindoClientException(
+            _extract_message(payload, default), status_code=resp.status_code,
+            payload=payload, url=url)
+
+    if resp.content and not isinstance(payload, (dict, list)):
+        raise PindoClientException(
+            'Unexpected non-JSON response from the API.', status_code=resp.status_code,
+            payload=payload, url=url)
+    return payload
+
+
+def _require_key(body: Any, key: str) -> Any:
+    if not isinstance(body, dict) or key not in body:
+        raise PindoClientException(
+            'Unexpected response from the API: missing "{}".'.format(key), payload=body)
+    return body[key]
