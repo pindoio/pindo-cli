@@ -1,0 +1,24 @@
+version: 2
+updates:
+  - package-ecosystem: pip  # reads pyproject.toml + poetry.lock
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      runtime:
+        dependency-type: production
+      dev:
+        dependency-type: development
+    commit-message:
+      prefix: fix(deps)
+      prefix-development: chore(deps-dev)
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ['*']
+    commit-message:
+      prefix: ci

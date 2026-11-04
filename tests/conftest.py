@@ -10,8 +10,12 @@ API = DEFAULT_BASE_URL
 
 
 def pytest_addoption(parser):
-    parser.addoption('--run-live', action='store_true', default=False,
-                     help='run tests that hit the real Pindo API')
+    parser.addoption(
+        '--run-live',
+        action='store_true',
+        default=False,
+        help='run tests that hit the real Pindo API',
+    )
 
 
 def pytest_collection_modifyitems(config, items):
@@ -49,6 +53,7 @@ def mocked():
 def url():
     def _url(path):
         return API + path
+
     return _url
 
 

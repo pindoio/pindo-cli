@@ -1,9 +1,19 @@
-"""The pre-0.3 ``pindo_cli.http`` classes must keep working."""
-from pindo_cli.http import (SMS, Balance, ForgetPassword, Organization, RecoverPassword,
-                            RefreshToken, Register, Token)
+"""The pre-0.3 ``pindo_cli.http`` classes must keep working (with a deprecation warning)."""
+
+import importlib
+import sys
+
+import pytest
 
 
-def test_shim_classes(mocked, url):
+@pytest.fixture
+def http():
+    sys.modules.pop('pindo_cli.http', None)
+    with pytest.warns(DeprecationWarning, match='pindo_cli.http is deprecated'):
+        return importlib.import_module('pindo_cli.http')
+
+
+def test_shim_classes(mocked, url, http):
     mocked.get(url('/users/token'), json={'token': 'T'})
     mocked.get(url('/users/refresh/token'), json={'token': 'R'})
     mocked.post(url('/users/register'), json={'message': 'created'})
@@ -13,11 +23,11 @@ def test_shim_classes(mocked, url):
     mocked.get(url('/wallets/self'), json={'amount': 3})
     mocked.put(url('/orgs/self'), json={'message': 'ok'})
 
-    assert str(Token('u', 'p')) == 'T'
-    assert str(RefreshToken('u', 'p')) == 'R'
-    assert str(Register('u', 'e', 'p')) == 'created'
-    assert ForgetPassword('e').resp().status_code == 200
-    assert str(RecoverPassword('RT', 'a', 'a')) == 'done'
-    assert SMS('tok', '+1', 'hi', 'P').send() == {'status': 'sent'}
-    assert str(Balance('tok')) == '3'
-    assert "'message': 'ok'" in str(Organization('tok', 'n', 'w', 1))
+    assert str(http.Token('u', 'p')) == 'T'
+    assert str(http.RefreshToken('u', 'p')) == 'R'
+    assert str(http.Register('u', 'e', 'p')) == 'created'
+    assert http.ForgetPassword('e').resp().status_code == 200
+    assert str(http.RecoverPassword('RT', 'a', 'a')) == 'done'
+    assert http.SMS('tok', '+1', 'hi', 'P').send() == {'status': 'sent'}
+    assert str(http.Balance('tok')) == '3'
+    assert "'message': 'ok'" in str(http.Organization('tok', 'n', 'w', 1))

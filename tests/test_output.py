@@ -17,22 +17,33 @@ COLS = [
     Column('meta'),
 ]
 ROWS = [
-    {'id': 'a', 'created_at': '2026-10-01T10:00:00.123456', 'cost': 0.006, 'count': 1200,
-     'meta': {'k': 1}},
+    {
+        'id': 'a',
+        'created_at': '2026-10-01T10:00:00.123456',
+        'cost': 0.006,
+        'count': 1200,
+        'meta': {'k': 1},
+    },
     {'id': 'b', 'created_at': '24-07-2020, 23:35:32', 'cost': None, 'count': 2.5, 'meta': None},
 ]
 
 
-@pytest.mark.parametrize('value, expected', [
-    ('2026-10-01T10:00:00.123456', datetime(2026, 10, 1, 10, 0, 0, 123456, tzinfo=timezone.utc)),
-    ('2026-10-01T10:00:00Z', datetime(2026, 10, 1, 10, tzinfo=timezone.utc)),
-    ('24-07-2020, 23:35:32', datetime(2020, 7, 24, 23, 35, 32, tzinfo=timezone.utc)),
-    ('2026-10-01', datetime(2026, 10, 1, tzinfo=timezone.utc)),
-    (1700000000, datetime(2023, 11, 14, 22, 13, 20, tzinfo=timezone.utc)),
-    ('garbage', None),
-    (None, None),
-    ('', None),
-])
+@pytest.mark.parametrize(
+    ('value', 'expected'),
+    [
+        (
+            '2026-10-01T10:00:00.123456',
+            datetime(2026, 10, 1, 10, 0, 0, 123456, tzinfo=timezone.utc),
+        ),
+        ('2026-10-01T10:00:00Z', datetime(2026, 10, 1, 10, tzinfo=timezone.utc)),
+        ('24-07-2020, 23:35:32', datetime(2020, 7, 24, 23, 35, 32, tzinfo=timezone.utc)),
+        ('2026-10-01', datetime(2026, 10, 1, tzinfo=timezone.utc)),
+        (1700000000, datetime(2023, 11, 14, 22, 13, 20, tzinfo=timezone.utc)),
+        ('garbage', None),
+        (None, None),
+        ('', None),
+    ],
+)
 def test_parse_datetime(value, expected):
     assert parse_datetime(value) == expected
 
@@ -47,14 +58,16 @@ def test_resolve_tz():
     assert resolve_tz(None) is not None
     assert resolve_tz('local') is not None
     assert str(resolve_tz('Africa/Kigali')) == 'Africa/Kigali'
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match='Unknown timezone'):
         resolve_tz('Mars/Olympus')
 
 
 def test_format_value():
     assert format_value(None, Column('x')) == ''
-    assert format_value('2026-10-01T10:00:00', Column('x', kind='datetime'), timezone.utc) == \
-        '2026-10-01 10:00:00'
+    assert (
+        format_value('2026-10-01T10:00:00', Column('x', kind='datetime'), timezone.utc)
+        == '2026-10-01 10:00:00'
+    )
     assert format_value('nodate', Column('x', kind='datetime')) == 'nodate'
     assert format_value(0.006, Column('x', kind='money')) == '0.006'
     assert format_value(71421.953, Column('x', kind='money')) == '71,421.953'
@@ -76,7 +89,9 @@ def test_render_table_to_console():
     console = Console(file=buf, width=120, force_terminal=False)
     render(ROWS, COLS, 'table', console=console, title='T', tz=timezone.utc)
     text = buf.getvalue()
-    assert 'T' in text and 'ID' in text and 'Created' in text
+    assert 'T' in text
+    assert 'ID' in text
+    assert 'Created' in text
     assert '2026-10-01 10:00:00' in text
     assert '1,200' in text
 
@@ -91,7 +106,7 @@ def test_render_table_empty_caption():
 def test_render_table_to_file(tmp_path):
     path = tmp_path / 'out.txt'
     render(ROWS, COLS, 'table', file=str(path))
-    assert 'ID' in path.read_text()
+    assert 'ID' in path.read_text(encoding='utf-8')
 
 
 def test_render_csv(capsys):
@@ -116,12 +131,12 @@ def test_render_json_raw_to_file(tmp_path):
     path = tmp_path / 'out.json'
     rows = [{'id': 1, 'when': datetime(2026, 1, 1, tzinfo=timezone.utc), 'extra': True}]
     render(rows, COLS[:1], 'json', file=str(path), raw_json=True)
-    data = json.loads(path.read_text())
+    data = json.loads(path.read_text(encoding='utf-8'))
     assert data == [{'id': 1, 'when': '2026-01-01T00:00:00+00:00', 'extra': True}]
 
 
 def test_render_unknown_format():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match='Unknown output format'):
         render([], COLS, 'xml')
 
 

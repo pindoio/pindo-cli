@@ -2,6 +2,20 @@
 
 <!--next-version-placeholder-->
 
+## v1.1.0 (2026-11-04)
+### Feature
+* **cli:** `pindo login`/`logout`, `pindo config show|path`, token resolution from `--token` > `$PINDO_TOKEN` > `~/.pindo/config.toml`, `--base-url`/`$PINDO_BASE_URL`, a shared API client with timeouts and clean `Error: ...` messages, and the `pindo report` command group ([#59](https://github.com/pindoio/pindo-cli/pull/59))
+
+### Build
+* Replace the unmaintained `click8` with `click`; require Python 3.9+
+
+_Not published to PyPI: the release workflow of the time did not upload it._
+
+## v1.0.0 (2025-06-24)
+* Update the PindoVerify URL in the documentation
+
+_Not published to PyPI._
+
 ## v0.2.1 (2022-01-19)
 ### Fix
 * **readme:** Docs ([`5a56a39`](https://github.com/pindoio/pindo-cli/commit/5a56a39d83b0102f8580e004a94dbb03a4d61543))

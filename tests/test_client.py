@@ -1,9 +1,10 @@
 import pytest
 import responses
+from requests.exceptions import ConnectionError as ReqConnectionError
+from requests.exceptions import Timeout
 from responses import matchers
-from requests.exceptions import ConnectionError as ReqConnectionError, Timeout
 
-from pindo_cli.client import PindoClient, PindoClientException, _extract_message
+from pindo_cli.client import PindoClient, PindoClientException, _extract_message, redact
 
 
 @pytest.fixture
@@ -109,10 +110,14 @@ def test_iter_pages_follows_next_url(mocked, client, url):
         'pages': {'next_url': url('/v1/sms/inbounds?page=2&per_page=2')},
     }
     page2 = {'inbound_sms': [{'id': 3}], 'pages': {'next_url': None}}
-    mocked.get(url('/v1/sms/inbounds'), json=page1,
-               match=[matchers.query_param_matcher({'per_page': '2'})])
-    mocked.get(url('/v1/sms/inbounds'), json=page2,
-               match=[matchers.query_param_matcher({'page': '2', 'per_page': '2'})])
+    mocked.get(
+        url('/v1/sms/inbounds'), json=page1, match=[matchers.query_param_matcher({'per_page': '2'})]
+    )
+    mocked.get(
+        url('/v1/sms/inbounds'),
+        json=page2,
+        match=[matchers.query_param_matcher({'page': '2', 'per_page': '2'})],
+    )
     ids = [i['id'] for i in client.iter_pages('/v1/sms/inbounds', params={'per_page': 2})]
     assert ids == [1, 2, 3]
     assert len(mocked.calls) == 2
@@ -121,10 +126,13 @@ def test_iter_pages_follows_next_url(mocked, client, url):
 
 
 def test_iter_pages_max_pages(mocked, client, url):
-    mocked.get(url('/v1/sms/inbounds'), json={
-        'inbound_sms': [{'id': 1}, {'id': 2}],
-        'pages': {'next_url': url('/v1/sms/inbounds?page=2')},
-    })
+    mocked.get(
+        url('/v1/sms/inbounds'),
+        json={
+            'inbound_sms': [{'id': 1}, {'id': 2}],
+            'pages': {'next_url': url('/v1/sms/inbounds?page=2')},
+        },
+    )
     ids = [i['id'] for i in client.iter_pages('/v1/sms/inbounds', max_pages=1)]
     assert ids == [1, 2]
     assert len(mocked.calls) == 1
@@ -151,3 +159,53 @@ def test_url_building():
     assert c.url('/a') == 'https://x.example/a'
     assert c.url('/users/recovery/{token}', token='T') == 'https://x.example/users/recovery/T'
     assert c.url('https://other.example/full') == 'https://other.example/full'
+
+
+def test_redact_hides_secrets_recursively():
+    body = {
+        'username': 'u',
+        'password': 'p',
+        'Token': 't',
+        'nested': [{'confirm_password': 'c', 'ok': 1}],
+    }
+    assert redact(body) == {
+        'username': 'u',
+        'password': '***',
+        'Token': '***',
+        'nested': [{'confirm_password': '***', 'ok': 1}],
+    }
+    assert redact(None) is None
+    assert redact('text') == 'text'
+
+
+def test_default_session_retries_only_safe_methods():
+    retry = PindoClient().session.get_adapter('https://api.pindo.io').max_retries
+    assert retry.total == 3
+    assert 503 in retry.status_forcelist
+    assert retry.is_retry('GET', 503)
+    assert not retry.is_retry('POST', 503)  # never re-send an SMS
+
+
+def test_get_is_retried_on_503(mocked, client, url):
+    mocked.get(url('/wallets/self'), status=503)
+    mocked.get(url('/wallets/self'), json={'amount': 1})
+    assert client.wallet() == {'amount': 1}
+    assert len(mocked.calls) == 2
+
+
+def test_post_is_not_retried(mocked, client, url):
+    mocked.post(url('/v1/sms/'), status=503)
+    mocked.post(url('/v1/sms/'), json={'status': 'sent'})
+    with pytest.raises(PindoClientException) as exc:
+        client.send_sms('+250781234567', 'hi', 'P')
+    assert exc.value.status_code == 503
+    assert len(mocked.calls) == 1
+
+
+def test_custom_session_is_used_as_is():
+    import requests
+
+    session = requests.Session()
+    client = PindoClient(session=session)
+    assert client.session is session
+    assert session.headers['User-Agent'].startswith('pindo-cli/')

@@ -67,3 +67,32 @@ def test_config_path_default(monkeypatch):
     monkeypatch.delenv('PINDO_CONFIG')
     assert cfg.config_path().name == 'config.toml'
     assert cfg.config_path().parent.name == '.pindo'
+
+
+@pytest.mark.skipif(sys.platform == 'win32', reason='POSIX permissions')
+def test_config_dir_and_file_are_private(tmp_path, monkeypatch):
+    path = tmp_path / 'nested' / 'config.toml'
+    monkeypatch.setenv('PINDO_CONFIG', str(path))
+    cfg.save_config({'token': 'secret'})
+    assert stat.S_IMODE(os.stat(path.parent).st_mode) == 0o700
+    assert stat.S_IMODE(os.stat(path).st_mode) == 0o600
+
+
+def test_save_config_is_atomic(isolated_config, monkeypatch):
+    cfg.save_config({'token': 'old'})
+
+    def boom(*args, **kwargs):
+        raise OSError('disk full')
+
+    monkeypatch.setattr(cfg.os, 'replace', boom)
+    with pytest.raises(OSError, match='disk full'):
+        cfg.save_config({'token': 'new'})
+    # the original file is untouched and no temp files are left behind
+    assert cfg.load_config() == {'token': 'old'}
+    assert [p.name for p in isolated_config.parent.iterdir()] == ['config.toml']
+
+
+def test_load_config_returns_plain_types(isolated_config):
+    isolated_config.write_text('token = "abc"\nusername = "remy"\n')
+    data = cfg.load_config()
+    assert type(data['token']) is str

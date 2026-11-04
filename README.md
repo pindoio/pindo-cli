@@ -1,734 +1,183 @@
 # pindo-cli
 
-![Tests](https://github.com/pindoio/pindo-cli/workflows/Tests/badge.svg)
-![fury](https://badge.fury.io/py/pindo-cli.svg)
-![pipy](https://pypip.in/d/pindo-cli/badge.png)
+[![Tests](https://github.com/pindoio/pindo-cli/actions/workflows/ci.yaml/badge.svg)](https://github.com/pindoio/pindo-cli/actions/workflows/ci.yaml)
+[![PyPI](https://img.shields.io/pypi/v/pindo-cli.svg)](https://pypi.org/project/pindo-cli/)
+[![Python versions](https://img.shields.io/pypi/pyversions/pindo-cli.svg)](https://pypi.org/project/pindo-cli/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+The official command-line interface for [Pindo](https://www.pindo.io/), the SMS
+platform. Log in once, then send test messages, check your balance, manage
+your organization and pull reports from your terminal or from scripts.
+
+- [Installation](#installation)
+- [Quick start](#quick-start)
+- [Commands](#commands)
+- [Authentication and configuration](#authentication-and-configuration)
+- [Reports](#reports)
+- [Using the CLI in scripts](#using-the-cli-in-scripts)
+- [Using the API directly](#using-the-api-directly)
+- [Development](#development)
 
 ## Installation
 
-Install from PyPi using [pip](http://www.pip-installer.org/en/latest), a package manager for Python.
+Requires Python 3.10 or newer.
 
-`pip install pindo-cli`
-
-Don't have pip installed? Try installing it, by running this from the command line:
-
-`$ curl https://raw.github.com/pypa/pip/master/contrib/get-pip.py | python`
-
-`python setup.py install`
-
-You may need to run the above commands with `sudo`.
-
-## Getting Started
-
-Once you have installed **Pindo CLI** you're ready to go.
-
-```bash 
-pindo --help
-```
-```bash
-Usage: pindo [OPTIONS] COMMAND [ARGS]...
-
-  Pindo CLI
-
-  Authenticate with the Pindo API, send test messages and pull reports from
-  your account.
-
-  Run `pindo login` once; afterwards every command picks the saved token up
-  automatically. See `pindo report --help` for the reporting commands.
-
-  https://www.pindo.io/
-
-Options:
-  --debug / --no-debug  Log every API request and response to stderr.
-  --base-url URL        API base URL (default: $PINDO_BASE_URL or
-                        https://api.pindo.io).
-  -v, --version         Show the version and exit.
-  --help                Show this message and exit.
-
-Commands:
-  balance          Get account balance
-  config           Show or inspect the CLI configuration.
-  forget-password  Request a password-recovery token by email.
-  login            Log in and save your API token for later commands.
-  logout           Remove the saved token and config file.
-  org              Update Organization Settings
-  refresh-token    Refresh a Token.
-  register         Create a new Pindo account.
-  report           Pull reports from your Pindo account.
-  sms              Send a test message
-  token            Request a token for using Pindo API (printed, not saved).
-```
-
-### Authentication
-
-Log in once and the CLI remembers your API token:
+The recommended way is [pipx](https://pipx.pypa.io/) (or
+[uv](https://docs.astral.sh/uv/)), which installs the `pindo` command in its
+own isolated environment:
 
 ```bash
-pindo login
-# Username: remy
-# Password:
-# Logged in as remy. Token saved to /Users/remy/.pindo/config.toml
+pipx install pindo-cli
 ```
 
-After that, `pindo balance`, `pindo sms`, `pindo org` and every `pindo report ...`
-command work without `--token`. The token is looked up in this order:
+```bash
+uv tool install pindo-cli
+```
+
+Plain pip works too:
+
+```bash
+python -m pip install --upgrade pindo-cli
+```
+
+Check it worked:
+
+```bash
+pindo --version
+```
+
+## Quick start
+
+```bash
+pindo register                 # create an account (skip if you have one)
+pindo login                    # saves your API token to ~/.pindo/config.toml
+pindo balance                  # USD 71421.953
+pindo sms --to +250781234567 --text "Hello from Pindo" --sender Pindo
+```
+
+Every command prompts for anything you leave out, and `pindo <command> --help`
+(or `-h`) lists its options.
+
+## Commands
+
+| Command | What it does |
+|---|---|
+| `pindo login` | Log in and save your API token for later commands |
+| `pindo logout` | Delete the saved token |
+| `pindo token` | Print a new API token without saving it |
+| `pindo refresh-token` | Request a fresh token and update the saved one |
+| `pindo register` | Create a new Pindo account |
+| `pindo forgot-password` | Email yourself a password-recovery token |
+| `pindo recover-password` | Set a new password with that recovery token |
+| `pindo sms` | Send a test SMS |
+| `pindo balance` | Show your account balance |
+| `pindo org` | Update your organization's name, delivery-report webhook and retry count |
+| `pindo config show` | Show the active base URL, user and (masked) token, and where the token came from |
+| `pindo config path` | Print the config file location |
+| `pindo report ...` | Reporting commands (see [Reports](#reports)) |
+
+Global options go **before** the command:
+
+| Option | Meaning |
+|---|---|
+| `--debug` | Log every API request and response to stderr. Passwords and tokens are redacted. |
+| `--base-url URL` | Talk to another API environment, e.g. staging |
+| `-v`, `--version` | Show the version |
+| `-h`, `--help` | Show help |
+
+```bash
+pindo --debug balance
+```
+
+Phone numbers must be in international format with the country code
+(`+250781234567`). Spaces, dashes and brackets are stripped, and a missing
+leading `+` is added.
+
+## Authentication and configuration
+
+`pindo login` stores your token in `~/.pindo/config.toml`. The file and its
+folder can only be read by your user account. Every command that needs a token
+looks for one in this order:
 
 1. `--token` / `-t` on the command line
 2. the `PINDO_TOKEN` environment variable (handy for CI and cron jobs)
-3. `~/.pindo/config.toml`, written by `pindo login` and readable only by you
+3. the config file written by `pindo login`
 
-`pindo config show` tells you which one is in effect (the token is masked);
-`pindo logout` deletes the file. Set `PINDO_CONFIG=/path/to/file.toml` to
-use a different config file, and `PINDO_BASE_URL` or `--base-url` to point the
-CLI at another environment (e.g. staging).
+| Environment variable | Purpose |
+|---|---|
+| `PINDO_TOKEN` | API token to use instead of the saved one |
+| `PINDO_BASE_URL` | API base URL (default `https://api.pindo.io`) |
+| `PINDO_CONFIG` | Use a different config file |
 
-Errors from the API are printed as a single line on stderr with exit code 1,
-so the CLI is safe to use in scripts:
+Run `pindo config show` to see which token is in use and where it came from.
 
-```bash
+## Reports
+
+Reporting commands live under `pindo report` and all share these options:
+
+| Option | Meaning |
+|---|---|
+| `--from DATE` / `--to DATE` | Date range. Accepts `2026-10-01`, `today`, `yesterday` or `30d`. Default: last 7 days. |
+| `--page N` / `--per-page N` | Pagination (default page 1, 50 rows) |
+| `--all` | Fetch every page |
+| `-o`, `--output table\|csv\|json` | Output format (default `table`) |
+| `-f`, `--file PATH` | Write to a file instead of the terminal |
+| `--tz ZONE` | Timezone for dates, e.g. `Africa/Kigali` or `UTC` (default: your local zone) |
+
+Run `pindo report --help` to see the available reports.
+
+## Using the CLI in scripts
+
+Errors are printed to stderr as a single `Error: ...` line, and the exit code
+tells you what happened:
+
+| Exit code | Meaning |
+|---|---|
+| `0` | Success |
+| `1` | The API or the network returned an error (bad token, unknown email, server down, ...) |
+| `2` | Invalid usage, e.g. a missing option or a malformed phone number |
+
+```console
 $ pindo balance --token wrong
 Error: Unauthorized. Your token is invalid or expired; run `pindo login`. (HTTP 401)
 $ echo $?
 1
 ```
 
-Add `--debug` before the command to see every request and response:
+Read-only requests are retried automatically, with backoff, when the server
+is temporarily unavailable (HTTP 429/502/503/504). Requests that send messages
+or change data are never retried, so an SMS is never sent twice.
 
-```bash
-pindo --debug balance
-```
+## Using the API directly
 
-### Reports
-
-Reporting commands live under `pindo report` and share the same options:
-`--from/--to` for the date range (default: last 7 days; accepts `2026-10-01`,
-`today`, `yesterday` or `30d`), `--page/--per-page/--all` for pagination,
-`--output table|csv|json` and `--file PATH` to save the result, and `--tz` to
-choose the timezone used for dates. Run `pindo report --help` for the list of
-available reports.
-
-- Send a test message
-
-```bash 
-pindo sms --help
-```
-```bash
-Usage: pindo sms [OPTIONS]
-
-  Send a test message
-
-Options:
-  -t, --token TOKEN  API token. Defaults to $PINDO_TOKEN, then the token saved
-                     by `pindo login`.
-  --to TEXT          Receiver phone number (+250xxxxxx)
-  --text TEXT        Message to send
-  --sender TEXT      Sender name
-  --help             Show this message and exit.
-```
+The CLI is a thin client for the Pindo REST API. Examples for sending SMS
+(single and bulk), inbound messages, delivery-report webhooks and PindoVerify
+in cURL, Python, Node.js, PHP, Ruby, Go, Java and C# are in
+[docs/api.md](docs/api.md).
 
 ## Development
 
+You need [Poetry](https://python-poetry.org/) 2.x.
+
 ```bash
-git clone https://github.com/pindoio/pindo-cli.git && cd pindo-cli
+git clone https://github.com/pindoio/pindo-cli.git
+cd pindo-cli
 poetry install
-poetry run pytest --cov=pindo_cli      # unit tests; all HTTP is mocked
-poetry run pytest --run-live           # also run the tests that hit api.pindo.io
-poetry run flake8 pindo_cli tests
+poetry run pre-commit install   # optional: lint and format on every commit
 ```
 
-The code is organised as:
-
-| Module | Role |
+| Task | Command |
 |---|---|
-| `pindo_cli/cli.py` | Click commands; each one calls one method on the client and prints the result |
-| `pindo_cli/client.py` | `PindoClient`: one `requests.Session`, auth header, timeouts, error handling, pagination. All endpoint paths are in `ENDPOINTS` |
-| `pindo_cli/config.py` | Token / base-URL resolution and the `~/.pindo/config.toml` file |
-| `pindo_cli/output.py` | Table / CSV / JSON rendering shared by reports |
-| `pindo_cli/reports/` | `pindo report ...` commands and their shared options |
-| `pindo_cli/http.py` | Backward-compatible wrappers for the pre-0.3 API |
-
-Commits follow the [Conventional Commits](https://www.conventionalcommits.org/)
-format (`feat:`, `fix:`, `docs:` ...); `python-semantic-release` uses them to
-bump the version and publish to PyPI on every push to `master`.
-
-## API Response Code
-
-| **Code** | **Text** | **Meaning** |
----| --- | ---
-201 | sent | Successfully sent
-401 | unauthorized | unauthorized access
-404 | not found | invalid resource URI
-409 | conflict | number is from unsupported country
-409 | conflict | number is from unsupported telco
-409 | conflict | Wrong phone number format
-
-- An example of a successfully sent SMS.
-
-```json
-{
-	"bonus": 0.0,
-	"discount": 0.4,
-	"item_count": 1,
-	"item_price": 0.006,
-	"remaining_balance": 71421.953,
-	"self_url": "http://api.pindo.io/v1/sms/out_sms_01H7DJEJ1YZKTNT8EDXY2C7YG9",
-	"sms_id": "out_sms_01H7DJEJ1YZKTNT8EDXY2C7YG9",
-	"status": "sent",
-	"to": "+250789385878",
-	"total_cost": 0.006
-}
-```
-
-- Pindo Delivery Report (DLR) Webhook Event example `POST` methods
-
-```json
-{
-    "status": "DELIVRD",
-    "sms_id": 1058918,
-    "modified_at": "24-07-2020, 23:35:32",
-    "retries_count": 0
-}
-
-```
-
-## SMS API Usage
-
-The `pindo api` needs your Token. You can either pass the token directly to the constructor (see the code below) or via environment variables.
-
-```bash
-
-# cURL
-
-# Send a single sms
-curl -X POST \
-https://api.pindo.io/v1/sms/ \
--H 'Accept: */*' \
--H 'Authorization: Bearer your-token' \
--H 'Content-Type: application/json' \
--d '{
-"to" : "+250781234567",
-"text" : "Hello from Pindo",
-"sender" : "Pindo"
-}'
-
-# Send bulk sms
-curl -X POST \
-https://api.pindo.io/v1/sms/bulk \
--H 'Accept: */*' \
--H 'Authorization: Bearer your-token' \
--H 'Content-Type: application/json' \
--d '{
-"recipients" : [{"phonenumber": "+250781234567", "name": "Remy Muhire"}],
-"text" : "Hello @contact.name, Welcome to Pindo",
-"sender" : "Pindo"
-}'
-```
-
-```python
-
-# python
-
-import requests
-
-token='your-token'
-headers = {'Authorization': 'Bearer ' + token}
-# For single sms
-data = {'to' : '+250781234567', 'text' : 'Hello from Pindo', 'sender' : 'Pindo'}
-url = 'https://api.pindo.io/v1/sms/'
-
-# For bulk sms
-data = {'recipients' : [{'phonenumber': '+250781234567', 'name': 'Remy Muhire'}], 'text' : 'Hello @contact.name, Welcome to Pindo', 'sender' : 'Pindo'}
-url = 'https://api.pindo.io/v1/sms/bulk'
-
-response = requests.post(url, json=data, headers=headers)
-print(response)
-print(response.json())
-
-```
-
-```javascript
-// NodeJS
-
-var request = require("request");
-// For single sms
-data = { to: "+250781234567", text: "Hello from Pindo", sender: "Pindo" };
-url = 'https://api.pindo.io/v1/sms/'
-
-// For bulk sms
-data = { recipients: [{phonenumber: "+250781234567", name: "Remy Muhire"}], text: "Hello @contact.name, Welcome to Pindo", sender: "Pindo" };
-url = 'https://api.pindo.io/v1/sms/bulk'
-
-
-var options = {
-  method: "POST",
-  body: data,
-  json: true,
-  url: url,
-  headers: {
-    Authorization: "Bearer your-token"
-  }
-};
-
-function callback(error, response, body) {
-  if (!error && response.statusCode == 200) {
-    console.log(body);
-  }
-}
-//call the request
-
-request(options, callback);
-```
-
-```java
-
-// Java
-
-OkHttpClient client = new OkHttpClient();
-
-MediaType mediaType = MediaType.parse("application/json");
-// For single sms
-RequestBody body = RequestBody.create(mediaType, "{"to" : "+250781234567", "text" : "Hello from Pindo","sender" : "Pindo"}");
-String url = "https://api.pindo.io/v1/sms/";
-
-// For bulk sms
-RequestBody body = RequestBody.create(mediaType, "{"recipients": [{"phonenumber": "+250781234567", "name": "Remy Muhire"}], "text": "Hello @contact.name, Welcome to Pindo", "sender": "Pindo"}");
-String url = "https://api.pindo.io/v1/sms/bulk";
-
-Request request = new Request.Builder()
-.url(url)
-.post(body)
-.addHeader("Content-Type", "application/json")
-.addHeader("Authorization", "Bearer your-token")
-.build();
-Response response = client.newCall(request).execute();
-```
-
-```php
-
-// PHP
-
-$request = new HttpRequest();
-$request->setMethod(HTTP_METH_POST);
-
-$request->setHeaders(array(
-'Authorization' => 'Bearer your-token',
-'Content-Type' => 'application/json'
-));
-
-// For single sms
-$request->setUrl('https://api.pindo.io/v1/sms/');
-$request->setBody('{
-"to" : "+250781234567",
-"text" : "Hello from Pindo",
-"sender" : "Pindo"
-}');
-
-// For bulk sms
-$request->setUrl('https://api.pindo.io/v1/sms/bulk');
-$request->setBody('{
-  "recipients": [{"phonenumber": "+250781234567", "name": "Remy Muhire"}],
-  "text": "Hello @contact.name, Welcome to Pindo",
-  "sender": "Pindo"
-}');
-
-try {
-$response = $request->send();
-
-echo $response->getBody();
-} catch (HttpException $ex) {
-echo $ex;
-}
-
-// cURL
-
-$curl = curl_init();
-
-curl_setopt_array($curl, array(
-  CURLOPT_URL => "https://api.pindo.io/v1/sms/",
-  CURLOPT_RETURNTRANSFER => true,
-  CURLOPT_ENCODING => "",
-  CURLOPT_MAXREDIRS => 10,
-  CURLOPT_TIMEOUT => 0,
-  CURLOPT_FOLLOWLOCATION => true,
-  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-  CURLOPT_CUSTOMREQUEST => "POST",
-  CURLOPT_POSTFIELDS =>"{\n\t\"to\" : \"+250781234567\",\n\t\"text\" : \"Test SMS.\",\n\t\"sender\" : \"Pindo\"\n}",
-  CURLOPT_HTTPHEADER => array(
-    "Authorization: Bearer token",
-    "Content-Type: application/json"
-  ),
-));
-
-$response = curl_exec($curl);
-
-curl_close($curl);
-echo $response;
-```
-
-```Go
-
-// GO
-
-package main
-
-import (
-"fmt"
-"strings"
-"net/http"
-"io/ioutil"
-)
-
-func main() {
-// For single sms
-url := "https://api.pindo.io/v1/sms/"
-
-payload := strings.NewReader("{"to" : "+250781234567", "text" : "Hello from Pindo","sender" : "Pindo"}")
-
-// For bulk sms
-url := "https://api.pindo.io/v1/sms/bulk"
-
-payload := strings.NewReader("{"recipients" : [{"phonenumber": "+250781234567", "name": "Remy Muhire"}], "text" : "Hello @contact.name, Welcome to Pindo","sender" : "Pindo"}")
-
-req, _ := http.NewRequest("POST", url, payload)
-
-req.Header.Add("Content-Type", "application/json")
-req.Header.Add("Authorization", "Bearer your-token")
-
-res, _ := http.DefaultClient.Do(req)
-
-defer res.Body.Close()
-body, _ := ioutil.ReadAll(res.Body)
-
-fmt.Println(res)
-fmt.Println(string(body))
-
-}
-```
-
-```csharp
-
-// C#
-
-var request = new RestRequest(Method.POST);
-request.AddHeader("Authorization", "Bearer your-token");
-request.AddHeader("Content-Type", "application/json");
-// For single sms
-request.AddParameter("undefined", "{\n\t\"to\" : \"+250781234567\", \n\t\"text\" : \"Hello from Pindo\",\n\t\"sender\" : \"Pindo\"\n}", ParameterType.RequestBody);
-var client = new RestClient("https://api.pindo.io/v1/sms/");
-
-// For bulk sms
-request.AddParameter("undefined", "{\n\t\"recipients\": [{\"phonenumber\": \"+250781234567\", \"name\": \"Remy Muhire\"}], \n\t\"text\": \"Hello @contact.name, Welcome to Pindo\",\n\t\"sender\": \"Pindo\"\n}", ParameterType.RequestBody);
-var client = new RestClient("https://api.pindo.io/v1/sms/bulk");
-IRestResponse response = client.Execute(request);
-```
-
-```ruby
-# ruby
-
-require 'net/http'
-require 'json'
-require 'uri'
-# For single sms
-data = { to: '+250781234567', text: 'Hello from Pindo', sender: 'Pindo' };
-
-uri = URI('https://api.pindo.io/v1/sms/')
-
-# For bulk sms
-data = { recipients: [{phonenumber: '+250781234567', name: 'Remy Muhire'}], text: 'Hello @contact.name, Welcome to Pindo', sender: 'Pindo' };
-
-uri = URI('https://api.pindo.io/v1/sms/bulk')
-http = Net::HTTP.new(uri.host, uri.port)
-req = Net::HTTP::Post.new(uri)
-req['Authorization'] = 'Bearer your-token'
-req['Content-Type'] = 'application/json'
-req.body = data.to_json
-http.request(req)
-
-```
-
-```dart
-
-// Dart
-
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-
-Future main() async {
-  // For single sms
-  String url = 'https://api.pindo.io/v1/sms/';
-  Map<String, String> data = {
-    'to': '+250781234567',
-    'text': 'Hello from Pindo',
-    'sender': 'Pindo'
-  };
-  
-  // For bulk sms
-  String url = 'https://api.pindo.io/v1/sms/bulk';
-  Map<String, String> data = {
-    'recipients': [{'phonenumber': '+250781234567', 'name': 'Remy Muhire'}],
-    'text': 'Hello @contact.name, Welcome to Pindo',
-    'sender': 'Pindo'
-  };
-
-  Map<String, String> headers = {
-    'Authorization': 'Bearer your-token',
-    'Content-Type': 'application/json'
-  };
-
-  http.Response response = await http.post(
-    url,
-    body: jsonEncode(data),
-    headers: headers,
-  );
-  print(response.statusCode);
-  print(jsonDecode(response.body));
-}
-
-```
-
-## Inbound SMS API Usage
-
-Pindo Inbound messaging allows you to have two-way SMS communication. By quickly setting up a Webhook URL in Pindo's dashboard, you will receive any event on your configured short or long code.
-
-- Pindo Inbound Webhook Event example `POST` methods
-
-```json
-{
-    "from": "+25078123456",
-    "to": "7878",
-    "created_at": "24-07-2020, 23:35:32",
-    "sms_id": 1058918,
-    "text": "Hello from Pindo",
-    "telco": "MTN"
-}
-
-```
-- List All Inbound SMS
-
-```json
-{
-   "inbound_sms":[
-      {
-         "account_id":11783,
-         "conversation_id":null,
-         "created_at":"2022-08-05T12:32:42.196907",
-         "id":20,
-         "id_smsc":null,
-         "inbound_sms_number":"+250781113333",
-         "language_id":null,
-         "telco_id":null,
-         "text":"Hello world !"
-      }
-   ],
-   "pages":{
-      "first_url":"http://api.pindo.io/v1/sms/inbounds?page=1&per_page=20",
-      "last_url":"http://api.pindo.io/v1/sms/inbounds?page=1&per_page=20",
-      "next_url":null,
-      "page":1,
-      "pages":1,
-      "per_page":20,
-      "prev_url":null,
-      "total":20
-   }
-}
-```
-
-
-## Verify API Usage
-
-`PindoVerfiy` API lets you send a PIN to a user's phone and validate that they received it. PindoVerfiy can be used for a number of authentication and anti-fraud purposes, such as 2-factor authentication, password-less sign-in, and validating users’ phone numbers.
-
-- An example of a successfully generated PIN.
-
-```json
-{
-    "message": "success",
-    "network": "63510",
-    "remaining_balance": 487.49,
-    "request_id": 4
-}
-```
-
-- An example of a successfully verified PIN.
-
-```
-{
-    "message": "success",
-    "remaining_balance": 487.49,
-    "request_id": 4
-}
-```
-
-
-- Generate a PIN.
-
-```python
-
-# python
-
-import requests
-import json
-
-url = "https://api.pindo.io/v1/sms/verify"
-
-payload = json.dumps({
-  "brand": "Pindo",
-  "number": "+250781234567"
-})
-headers = {
-  'Authorization': 'Bearer your-token',
-  'Content-Type': 'application/json'
-}
-
-response = requests.request("POST", url, headers=headers, data=payload)
-
-print(response.json())
-```
-
-
-```javascript
-
-// NodeJS
-
-var request = require('request');
-var options = {
-  'method': 'POST',
-  'url': 'https://api.pindo.io/v1/sms/verify',
-  'headers': {
-    'Authorization': 'Bearer your-token',
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    "brand": "Pindo",
-    "number": "+250781234567"
-  })
-
-};
-request(options, function (error, response) {
-  if (error) throw new Error(error);
-  console.log(response.body);
-});
-```
-
-
-```java
-
-// Java
-
-OkHttpClient client = new OkHttpClient().newBuilder()
-  .build();
-MediaType mediaType = MediaType.parse("application/json");
-RequestBody body = RequestBody.create(mediaType, "{\n    \"brand\":\"Pindo\",\n    \"number\":\"+250781234567\"\n}\n");
-Request request = new Request.Builder()
-  .url("https://api.pindo.io/v1/sms/verify")
-  .method("POST", body)
-  .addHeader("Authorization", "Bearer your-token")
-  .addHeader("Content-Type", "application/json")
-  .build();
-Response response = client.newCall(request).execute();
-
-```
-
-```php
-
-// PHP
-
-<?php
-
-$curl = curl_init();
-
-curl_setopt_array($curl, array(
-  CURLOPT_URL => 'https://api.pindo.io/v1/sms/verify',
-  CURLOPT_RETURNTRANSFER => true,
-  CURLOPT_ENCODING => '',
-  CURLOPT_MAXREDIRS => 10,
-  CURLOPT_TIMEOUT => 0,
-  CURLOPT_FOLLOWLOCATION => true,
-  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-  CURLOPT_CUSTOMREQUEST => 'POST',
-  CURLOPT_POSTFIELDS =>'{
-    "brand":"Pindo",
-    "number":"+250781234567"
-}
-',
-  CURLOPT_HTTPHEADER => array(
-    'Authorization: Bearer your-token',
-    'Content-Type: application/json'
-  ),
-));
-
-$response = curl_exec($curl);
-
-curl_close($curl);
-echo $response;
-
-```
-
-
-- Verify a PIN
-
-```javascript
-
-// NodeJS
-
-var request = require('request');
-var options = {
-  'method': 'POST',
-  'url': 'https://api.pindo.io/v1/sms/verify/check',
-  'headers': {
-    'Authorization': 'Bearer your-token',
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    "code": "752623",
-    "request_id": 4
-  })
-
-};
-request(options, function (error, response) {
-  if (error) throw new Error(error);
-  console.log(response.body);
-});
-
-```
-
-- Check PIN status
-
-```javascript
-
-// NodeJS 
-
-var request = require('request');
-var options = {
-  'method': 'GET',
-  'url': 'https://api.pindo.io/v1/sms/verify/status/:request_id',
-  'headers': {
-    'Authorization': 'Bearer your-token'
-  }
-};
-request(options, function (error, response) {
-  if (error) throw new Error(error);
-  console.log(response.body);
-});
-
-```
-
-- Cancel a PIN
-
-```javascript
-
-// NodeJS
-
-var request = require('request');
-var options = {
-  'method': 'PUT',
-  'url': 'https://api.pindo.io/v1/sms/verify/cancel/:request_id',
-  'headers': {
-    'Authorization': 'Bearer your-token'
-  }
-};
-request(options, function (error, response) {
-  if (error) throw new Error(error);
-  console.log(response.body);
-});
-```
+| Run the tests (all HTTP is mocked) | `poetry run pytest --cov` |
+| Also run tests against the live API | `poetry run pytest --run-live` |
+| Lint | `poetry run ruff check .` |
+| Format | `poetry run ruff format .` |
+| Type-check | `poetry run mypy` |
+| Run the CLI from source | `poetry run pindo --help` |
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for how the code is laid out and how
+releases work. To report a security issue, see [SECURITY.md](SECURITY.md).
+
+## License
+
+[MIT](LICENSE)
