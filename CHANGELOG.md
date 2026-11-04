@@ -2,6 +2,32 @@
 
 <!--next-version-placeholder-->
 
+## v1.2.0 (2026-11-04)
+
+### Bug Fixes
+
+- Support named timezones on Windows
+  ([`7237413`](https://github.com/pindoio/pindo-cli/commit/72374130991947ecc0fdc31dbdab87c7836591bd))
+
+- **deps**: Patch security advisories and update all dependencies
+  ([`70b8278`](https://github.com/pindoio/pindo-cli/commit/70b82789463d5ae3d25d0323f505b6cc2b256bf1))
+
+### Continuous Integration
+
+- Modernize CI and fix the release workflow
+  ([`0948afd`](https://github.com/pindoio/pindo-cli/commit/0948afd17a260c2a69bf9384a9e1ff749ec35e13))
+
+### Documentation
+
+- Rewrite README, add API reference, contributing and security guides
+  ([`d5db347`](https://github.com/pindoio/pindo-cli/commit/d5db3474c2efe2594c7d4e3d4fbcd687e05014ae))
+
+### Features
+
+- **cli**: Harden security and polish the CLI
+  ([`c1cff4d`](https://github.com/pindoio/pindo-cli/commit/c1cff4ddbd22826c87a688cbc85c724de3cb9d00))
+
+
 ## v1.1.0 (2026-11-04)
 ### Feature
 * **cli:** `pindo login`/`logout`, `pindo config show|path`, token resolution from `--token` > `$PINDO_TOKEN` > `~/.pindo/config.toml`, `--base-url`/`$PINDO_BASE_URL`, a shared API client with timeouts and clean `Error: ...` messages, and the `pindo report` command group ([#59](https://github.com/pindoio/pindo-cli/pull/59))
