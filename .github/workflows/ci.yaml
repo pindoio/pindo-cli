@@ -3,59 +3,46 @@ name: Tests
 on:
   pull_request:
     branches: [master]
+  push:
+    branches: [master]
 
 jobs:
   build:
-    name: Build tool
+    name: Test (${{ matrix.os }}, py${{ matrix.python-version }})
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os:
           - 'ubuntu-latest'
           - 'macos-latest'
         python-version:
-          - '3.7'
-          - '3.8'
           - '3.9'
+          - '3.10'
+          - '3.11'
+          - '3.12'
+          - '3.13'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2.3.4
+        uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python@v2.2.2
+        uses: actions/setup-python@v5
         with:
-          python-version: ${{matrix.python-version}}
-      # Perma-cache Poetry since we only need it for checking pyproject version
-      - name: Cache Poetry
-        id: cache-poetry
-        uses: actions/cache@v2.1.5
-        with:
-          path: ~/.poetry
-          key: ${{ matrix.os }}-poetry
-      # Only runs when key from caching step changes
-      - name: Install latest version of Poetry
-        if: steps.cache-poetry.outputs.cache-hit != 'true'
-        run: |
-          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
-      # Poetry still needs to be re-prepended to the PATH on each run, since
-      # PATH does not persist between runs.
-      - name: Add Poetry to $PATH
-        run: |
-          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
-      - name: Get Poetry version
-        run: poetry --version
+          python-version: ${{ matrix.python-version }}
+      - name: Install Poetry
+        run: pipx install poetry
       - name: Check pyproject.toml validity
         run: poetry check --no-interaction
       - name: Cache dependencies
-        id: cache-deps
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v4
         with:
-          path: ${{github.workspace}}/.venv
-          key: ${{ matrix.os }}-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: ${{ matrix.os }}-
+          path: ${{ github.workspace }}/.venv
+          key: ${{ matrix.os }}-py${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
       - name: Install deps
-        if: steps.cache-deps.cache-hit != 'true'
         run: |
           poetry config virtualenvs.in-project true
           poetry install --no-interaction
+      - name: Lint
+        run: poetry run flake8 pindo_cli tests
       - name: Run tests
-        run: poetry run pytest -v --cov
+        run: poetry run pytest -v --cov=pindo_cli --cov-report=term-missing

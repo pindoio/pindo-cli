@@ -28,25 +28,85 @@ pindo --help
 ```bash
 Usage: pindo [OPTIONS] COMMAND [ARGS]...
 
-Pindo CLI
-	
-A simple Command Line Interface that allows you to authenticate with the Pindo API
-	
-https://www.pindo.io
+  Pindo CLI
+
+  Authenticate with the Pindo API, send test messages and pull reports from
+  your account.
+
+  Run `pindo login` once; afterwards every command picks the saved token up
+  automatically. See `pindo report --help` for the reporting commands.
+
+  https://www.pindo.io/
 
 Options:
-  --debug / --no-debug
+  --debug / --no-debug  Log every API request and response to stderr.
+  --base-url URL        API base URL (default: $PINDO_BASE_URL or
+                        https://api.pindo.io).
   -v, --version         Show the version and exit.
   --help                Show this message and exit.
 
 Commands:
-  balance        Get account balance
-  org            Organization
-  refresh-token  Refresh a Token.
-  register       Create a new Pindo account.
-  sms            Send a test message
-  token          Request a token for using Pindo API.
+  balance          Get account balance
+  config           Show or inspect the CLI configuration.
+  forget-password  Request a password-recovery token by email.
+  login            Log in and save your API token for later commands.
+  logout           Remove the saved token and config file.
+  org              Update Organization Settings
+  refresh-token    Refresh a Token.
+  register         Create a new Pindo account.
+  report           Pull reports from your Pindo account.
+  sms              Send a test message
+  token            Request a token for using Pindo API (printed, not saved).
 ```
+
+### Authentication
+
+Log in once and the CLI remembers your API token:
+
+```bash
+pindo login
+# Username: remy
+# Password:
+# Logged in as remy. Token saved to /Users/remy/.pindo/config.toml
+```
+
+After that, `pindo balance`, `pindo sms`, `pindo org` and every `pindo report ...`
+command work without `--token`. The token is looked up in this order:
+
+1. `--token` / `-t` on the command line
+2. the `PINDO_TOKEN` environment variable (handy for CI and cron jobs)
+3. `~/.pindo/config.toml`, written by `pindo login` and readable only by you
+
+`pindo config show` tells you which one is in effect (the token is masked);
+`pindo logout` deletes the file. Set `PINDO_CONFIG=/path/to/file.toml` to
+use a different config file, and `PINDO_BASE_URL` or `--base-url` to point the
+CLI at another environment (e.g. staging).
+
+Errors from the API are printed as a single line on stderr with exit code 1,
+so the CLI is safe to use in scripts:
+
+```bash
+$ pindo balance --token wrong
+Error: Unauthorized. Your token is invalid or expired; run `pindo login`. (HTTP 401)
+$ echo $?
+1
+```
+
+Add `--debug` before the command to see every request and response:
+
+```bash
+pindo --debug balance
+```
+
+### Reports
+
+Reporting commands live under `pindo report` and share the same options:
+`--from/--to` for the date range (default: last 7 days; accepts `2026-10-01`,
+`today`, `yesterday` or `30d`), `--page/--per-page/--all` for pagination,
+`--output table|csv|json` and `--file PATH` to save the result, and `--tz` to
+choose the timezone used for dates. Run `pindo report --help` for the list of
+available reports.
+
 - Send a test message
 
 ```bash 
@@ -58,12 +118,38 @@ Usage: pindo sms [OPTIONS]
   Send a test message
 
 Options:
-  --token TEXT   API Token
-  --to TEXT      Receiver phone number (+250xxxxxx)
-  --text TEXT    Message to send
-  --sender TEXT  Sender name
-  --help         Show this message and exit.
+  -t, --token TOKEN  API token. Defaults to $PINDO_TOKEN, then the token saved
+                     by `pindo login`.
+  --to TEXT          Receiver phone number (+250xxxxxx)
+  --text TEXT        Message to send
+  --sender TEXT      Sender name
+  --help             Show this message and exit.
 ```
+
+## Development
+
+```bash
+git clone https://github.com/pindoio/pindo-cli.git && cd pindo-cli
+poetry install
+poetry run pytest --cov=pindo_cli      # unit tests; all HTTP is mocked
+poetry run pytest --run-live           # also run the tests that hit api.pindo.io
+poetry run flake8 pindo_cli tests
+```
+
+The code is organised as:
+
+| Module | Role |
+|---|---|
+| `pindo_cli/cli.py` | Click commands; each one calls one method on the client and prints the result |
+| `pindo_cli/client.py` | `PindoClient`: one `requests.Session`, auth header, timeouts, error handling, pagination. All endpoint paths are in `ENDPOINTS` |
+| `pindo_cli/config.py` | Token / base-URL resolution and the `~/.pindo/config.toml` file |
+| `pindo_cli/output.py` | Table / CSV / JSON rendering shared by reports |
+| `pindo_cli/reports/` | `pindo report ...` commands and their shared options |
+| `pindo_cli/http.py` | Backward-compatible wrappers for the pre-0.3 API |
+
+Commits follow the [Conventional Commits](https://www.conventionalcommits.org/)
+format (`feat:`, `fix:`, `docs:` ...); `python-semantic-release` uses them to
+bump the version and publish to PyPI on every push to `master`.
 
 ## API Response Code
 
