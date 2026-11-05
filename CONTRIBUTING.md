@@ -64,7 +64,10 @@ reads them on every push to `master`:
 
 When a release is due, the Release workflow bumps the version in
 `pyproject.toml`, updates `CHANGELOG.md`, tags `vX.Y.Z`, creates the GitHub
-release and publishes to PyPI with the `PYPI_TOKEN` repository secret.
+release and publishes to PyPI through
+[Trusted Publishing](https://docs.pypi.org/trusted-publishers/) (no API token).
+If a PyPI upload fails, run the **Publish tag** workflow with the existing tag
+(for example `v1.2.0`) to publish it again.
 
 Dependabot opens weekly pull requests for dependency updates and monthly ones
 for GitHub Actions.

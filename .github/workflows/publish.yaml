@@ -22,6 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write  # attach the distributions to the GitHub release
+      id-token: write  # PyPI Trusted Publishing (OIDC), no API token needed
     steps:
       - uses: actions/checkout@v7
         with:
@@ -40,7 +41,6 @@ jobs:
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@v1.14.3
         with:
-          password: ${{ secrets.PYPI_TOKEN }}
           skip-existing: true
 
       - name: Attach distributions to the GitHub release
