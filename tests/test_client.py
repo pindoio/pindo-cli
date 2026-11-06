@@ -13,8 +13,8 @@ def client():
 
 
 def test_token_and_refresh(mocked, client, url):
-    mocked.get(url('/users/token'), json={'token': 'T1'})
-    mocked.get(url('/users/refresh/token'), json={'token': 'T2'})
+    mocked.get(url('/junction/users/auth/otp'), json={'token': 'T1'})
+    mocked.get(url('/junction/users/auth/token/refresh'), json={'token': 'T2'})
     assert client.get_token('u', 'p') == 'T1'
     assert client.refresh_token('u', 'p') == 'T2'
     # basic auth, no bearer header on auth endpoints
@@ -37,7 +37,11 @@ def test_missing_token_raises_before_request(mocked):
 
 
 def test_http_error_uses_api_message(mocked, client, url):
-    mocked.post(url('/users/register'), json={'message': 'username already exists'}, status=409)
+    mocked.post(
+        url('/junction/users/auth/register'),
+        json={'message': 'username already exists'},
+        status=409,
+    )
     with pytest.raises(PindoClientException) as exc:
         client.register('u', 'e@x.io', 'p')
     assert exc.value.status_code == 409
@@ -61,10 +65,34 @@ def test_non_json_body(mocked, client, url):
 
 
 def test_missing_key_in_response(mocked, client, url):
-    mocked.get(url('/users/token'), json={'nope': 1})
+    mocked.get(url('/junction/users/auth/otp'), json={'nope': 1})
     with pytest.raises(PindoClientException) as exc:
         client.get_token('u', 'p')
     assert 'missing "token"' in exc.value.message
+
+
+def test_token_inside_junction_data_envelope(mocked, client, url):
+    mocked.get(
+        url('/junction/users/auth/otp'),
+        json={'code': 200, 'data': {'token': 'T1'}, 'status': 'success'},
+    )
+    assert client.get_token('u', 'p') == 'T1'
+
+
+def test_junction_error_envelope_message(mocked, client, url):
+    mocked.get(
+        url('/junction/users/auth/otp'),
+        status=401,
+        json={
+            'code': 401,
+            'data': None,
+            'error': {'details': 'Basic auth required', 'message': 'Basic auth required'},
+            'status': 'fail',
+        },
+    )
+    with pytest.raises(PindoClientException) as exc:
+        client.get_token('u', 'p')
+    assert exc.value.message == 'Basic auth required'
 
 
 def test_network_errors(mocked, client, url):
@@ -82,8 +110,8 @@ def test_network_errors(mocked, client, url):
 def test_send_sms_and_org_and_recover(mocked, client, url):
     mocked.post(url('/v1/sms/'), json={'status': 'sent', 'sms_id': 'out_1'})
     mocked.put(url('/orgs/self'), json={'message': 'updated'})
-    mocked.put(url('/users/recovery/RT'), json={'message': 'password changed'})
-    mocked.post(url('/users/forgot'), json={'message': 'sent'})
+    mocked.put(url('/junction/users/password/recovery/RT'), json={'message': 'password changed'})
+    mocked.post(url('/junction/users/password/forgot'), json={'message': 'sent'})
 
     assert client.send_sms('+250', 'hi', 'Pindo')['status'] == 'sent'
     assert client.update_organization('Pindo', 'https://x', 3) == {'message': 'updated'}
