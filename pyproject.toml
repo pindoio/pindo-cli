@@ -1,6 +1,6 @@
 [project]
 name = "pindo-cli"
-version = "1.2.0"
+version = "1.2.1"
 description = "Command-line interface for the Pindo SMS API: log in, send test messages, manage your account and pull reports."
 authors = [{ name = "Team Pindo", email = "team@pindo.io" }]
 license = "MIT"

@@ -2,6 +2,22 @@
 
 <!--next-version-placeholder-->
 
+## v1.2.1 (2026-11-06)
+
+### Bug Fixes
+
+- Use the new /junction auth endpoints
+  ([`c78dcc6`](https://github.com/pindoio/pindo-cli/commit/c78dcc6ca35ed1908b3f6b2917cefcbb0b912a7d))
+
+### Continuous Integration
+
+- Add a manual workflow to publish an existing tag to PyPI
+  ([`dcf4a14`](https://github.com/pindoio/pindo-cli/commit/dcf4a1416a0d7fe0f5516af5a65517ec11403717))
+
+- Publish to PyPI with Trusted Publishing instead of an API token
+  ([`5fddf26`](https://github.com/pindoio/pindo-cli/commit/5fddf26f39c7a74339baabe10a3af75056172a1a))
+
+
 ## v1.2.0 (2026-11-04)
 
 ### Bug Fixes
