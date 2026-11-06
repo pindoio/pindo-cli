@@ -34,11 +34,11 @@ DEFAULT_RETRIES = 3
 
 ENDPOINTS = {
     # authentication / account
-    'token': '/users/token',
-    'refresh_token': '/users/refresh/token',
-    'register': '/users/register',
-    'forgot_password': '/users/forgot',
-    'recover_password': '/users/recovery/{token}',
+    'token': '/junction/users/auth/otp',
+    'refresh_token': '/junction/users/auth/token/refresh',
+    'register': '/junction/users/auth/register',
+    'forgot_password': '/junction/users/password/forgot',
+    'recover_password': '/junction/users/password/recovery/{token}',
     # messaging
     'sms_send': '/v1/sms/',
     # account resources
@@ -102,6 +102,10 @@ def _extract_message(payload: Any, default: str) -> str:
             if isinstance(value, str) and value:
                 return value
             if isinstance(value, dict):
+                # Junction envelope: {"error": {"message": "...", "details": "..."}}
+                nested = value.get('message')
+                if isinstance(nested, str) and nested:
+                    return nested
                 # e.g. {"message": {"username": "already exists"}}
                 return '; '.join(f'{k}: {v}' for k, v in value.items())
         if payload:
@@ -360,6 +364,9 @@ def _decode_response(resp: requests.Response, url: str) -> Any:
 
 
 def _require_key(body: Any, key: str) -> Any:
+    # Junction endpoints wrap results as {"code": ..., "data": {...}, "status": ...}.
+    if isinstance(body, dict) and key not in body and isinstance(body.get('data'), dict):
+        body = body['data']
     if not isinstance(body, dict) or key not in body:
         raise PindoClientException(
             f'Unexpected response from the API: missing "{key}".', payload=body

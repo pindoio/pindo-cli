@@ -25,7 +25,7 @@ def test_pindo_cli_version_flag(runner):
 
 
 def test_login_saves_token(runner, mocked, url, isolated_config):
-    mocked.get(url('/users/token'), json={'token': 'NEWTOKEN'})
+    mocked.get(url('/junction/users/auth/otp'), json={'token': 'NEWTOKEN'})
     result = runner.invoke(pindo.cli, ['login', '-u', 'remy', '-p', 'pw'])
     assert result.exit_code == 0, result.output
     assert 'Logged in' in result.output
@@ -36,7 +36,7 @@ def test_login_saves_token(runner, mocked, url, isolated_config):
 
 
 def test_login_saves_custom_base_url(runner, mocked, isolated_config):
-    mocked.get('https://staging.example/users/token', json={'token': 'T'})
+    mocked.get('https://staging.example/junction/users/auth/otp', json={'token': 'T'})
     result = runner.invoke(
         pindo.cli, ['--base-url', 'https://staging.example', 'login', '-u', 'r', '-p', 'p']
     )
@@ -45,7 +45,7 @@ def test_login_saves_custom_base_url(runner, mocked, isolated_config):
 
 
 def test_login_no_save(runner, mocked, url, isolated_config):
-    mocked.get(url('/users/token'), json={'token': 'NEWTOKEN'})
+    mocked.get(url('/junction/users/auth/otp'), json={'token': 'NEWTOKEN'})
     result = runner.invoke(pindo.cli, ['login', '-u', 'remy', '-p', 'pw', '--no-save'])
     assert result.exit_code == 0
     assert 'NEWTOKEN' in result.output
@@ -53,7 +53,7 @@ def test_login_no_save(runner, mocked, url, isolated_config):
 
 
 def test_login_wrong_credentials(runner, mocked, url):
-    mocked.get(url('/users/token'), json={'message': 'bad'}, status=401)
+    mocked.get(url('/junction/users/auth/otp'), json={'message': 'bad'}, status=401)
     result = runner.invoke(pindo.cli, ['login', '-u', 'dgd', '-p', 'oUhdo'])
     assert result.exit_code == 1
     assert 'Wrong username or password' in result.output
@@ -72,21 +72,21 @@ def test_logout(runner, saved_token, isolated_config):
 
 
 def test_command_token(runner, mocked, url):
-    mocked.get(url('/users/token'), json={'token': 'ABC'})
+    mocked.get(url('/junction/users/auth/otp'), json={'token': 'ABC'})
     result = runner.invoke(pindo.cli, ['token', '-u', 'u', '-p', 'p'])
     assert result.exit_code == 0
     assert 'ABC' in result.output
 
 
 def test_command_token_wrong_password(runner, mocked, url):
-    mocked.get(url('/users/token'), json={}, status=401)
+    mocked.get(url('/junction/users/auth/otp'), json={}, status=401)
     result = runner.invoke(pindo.cli, ['token', '-u', 'dgd', '-p', 'oUhdo'])
     assert result.exit_code == 1
     assert 'Wrong username or password' in result.output
 
 
 def test_command_refresh_token_updates_saved(runner, mocked, url, saved_token):
-    mocked.get(url('/users/refresh/token'), json={'token': 'FRESH'})
+    mocked.get(url('/junction/users/auth/token/refresh'), json={'token': 'FRESH'})
     result = runner.invoke(pindo.cli, ['refresh-token', '-u', 'remy', '-p', 'pw'])
     assert result.exit_code == 0, result.output
     assert 'FRESH' in result.output
@@ -94,14 +94,14 @@ def test_command_refresh_token_updates_saved(runner, mocked, url, saved_token):
 
 
 def test_command_refresh_token_no_config(runner, mocked, url, isolated_config):
-    mocked.get(url('/users/refresh/token'), json={'token': 'FRESH'})
+    mocked.get(url('/junction/users/auth/token/refresh'), json={'token': 'FRESH'})
     result = runner.invoke(pindo.cli, ['refresh-token', '-u', 'remy', '-p', 'pw'])
     assert result.exit_code == 0
     assert not isolated_config.exists()
 
 
 def test_command_refresh_token_bad(runner, mocked, url):
-    mocked.get(url('/users/refresh/token'), status=401)
+    mocked.get(url('/junction/users/auth/token/refresh'), status=401)
     result = runner.invoke(pindo.cli, ['refresh-token', '-u', 'abc', '-p', 'cbd'])
     assert result.exit_code == 1
     assert 'Wrong username or password' in result.output
@@ -111,7 +111,7 @@ def test_command_refresh_token_bad(runner, mocked, url):
 
 
 def test_command_register(runner, mocked, url):
-    mocked.post(url('/users/register'), json={'message': 'account created'})
+    mocked.post(url('/junction/users/auth/register'), json={'message': 'account created'})
     result = runner.invoke(pindo.cli, ['register', '-u', 'ken', '-e', 'remy@bar.io', '-p', 'bar'])
     assert result.exit_code == 0
     assert 'account created' in result.output
@@ -119,7 +119,7 @@ def test_command_register(runner, mocked, url):
 
 def test_command_register_conflict(runner, mocked, url):
     mocked.post(
-        url('/users/register'),
+        url('/junction/users/auth/register'),
         json={'message': 'username already exists in the database'},
         status=409,
     )
@@ -129,7 +129,7 @@ def test_command_register_conflict(runner, mocked, url):
 
 
 def test_command_register_server_error(runner, mocked, url):
-    mocked.post(url('/users/register'), body='down', status=500)
+    mocked.post(url('/junction/users/auth/register'), body='down', status=500)
     result = runner.invoke(pindo.cli, ['register', '-u', 'ken', '-e', 'remy@bar.io', '-p', 'bar'])
     assert result.exit_code == 1
     assert 'Error:' in result.output
@@ -138,7 +138,7 @@ def test_command_register_server_error(runner, mocked, url):
 @pytest.mark.parametrize('command', ['forgot-password', 'forget-password'])
 def test_command_forgot_password(runner, mocked, url, command):
     """``forget-password`` is the old name and must keep working."""
-    mocked.post(url('/users/forgot'), json={'message': 'ok'})
+    mocked.post(url('/junction/users/password/forgot'), json={'message': 'ok'})
     result = runner.invoke(pindo.cli, [command, '--email', 'remy@bar.io'])
     assert result.exit_code == 0, result.output
     assert 'recover-password' in result.output
@@ -152,14 +152,16 @@ def test_forget_password_alias_is_hidden(runner):
 
 
 def test_command_forgot_password_wrong_email(runner, mocked, url):
-    mocked.post(url('/users/forgot'), json={'message': 'no such user'}, status=404)
+    mocked.post(
+        url('/junction/users/password/forgot'), json={'message': 'no such user'}, status=404
+    )
     result = runner.invoke(pindo.cli, ['forgot-password', '--email', 'nobody@bar.io'])
     assert result.exit_code == 1
     assert 'The email provided does not exist' in result.output
 
 
 def test_command_recover_password(runner, mocked, url):
-    mocked.put(url('/users/recovery/RT'), json={'message': 'password updated'})
+    mocked.put(url('/junction/users/password/recovery/RT'), json={'message': 'password updated'})
     result = runner.invoke(
         pindo.cli, ['recover-password', '-t', 'RT', '--password', 'a', '--confirm_password', 'a']
     )
@@ -360,8 +362,8 @@ def test_debug_logs_requests(runner, mocked, url):
 
 
 def test_debug_never_logs_secrets(runner, mocked, url):
-    mocked.get(url('/users/token'), json={'token': 'SECRET-TOKEN'})
-    mocked.put(url('/users/recovery/RT'), json={'message': 'ok'})
+    mocked.get(url('/junction/users/auth/otp'), json={'token': 'SECRET-TOKEN'})
+    mocked.put(url('/junction/users/password/recovery/RT'), json={'message': 'ok'})
     result = runner.invoke(pindo.cli, ['--debug', 'token', '-u', 'u', '-p', 'pw'])
     assert result.exit_code == 0
     assert '"token": "***"' in result.output  # redacted in the debug log...

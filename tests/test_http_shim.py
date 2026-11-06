@@ -14,11 +14,11 @@ def http():
 
 
 def test_shim_classes(mocked, url, http):
-    mocked.get(url('/users/token'), json={'token': 'T'})
-    mocked.get(url('/users/refresh/token'), json={'token': 'R'})
-    mocked.post(url('/users/register'), json={'message': 'created'})
-    mocked.post(url('/users/forgot'), json={'message': 'sent'})
-    mocked.put(url('/users/recovery/RT'), json={'message': 'done'})
+    mocked.get(url('/junction/users/auth/otp'), json={'token': 'T'})
+    mocked.get(url('/junction/users/auth/token/refresh'), json={'token': 'R'})
+    mocked.post(url('/junction/users/auth/register'), json={'message': 'created'})
+    mocked.post(url('/junction/users/password/forgot'), json={'message': 'sent'})
+    mocked.put(url('/junction/users/password/recovery/RT'), json={'message': 'done'})
     mocked.post(url('/v1/sms/'), json={'status': 'sent'})
     mocked.get(url('/wallets/self'), json={'amount': 3})
     mocked.put(url('/orgs/self'), json={'message': 'ok'})
