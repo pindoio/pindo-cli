@@ -322,6 +322,13 @@ def test_command_org_dash_options_and_validation(runner, mocked, url):
     assert 'http(s) URL' in result.output
 
 
+def test_command_org_rejects_webhook_url_with_spaces(runner):
+    args = ['org', '-t', 'tok', '--name', 'P', '--retries-count', '2', '--webhook-url']
+    result = runner.invoke(pindo.cli, [*args, 'https://pindo.io/dlr with spaces'])
+    assert result.exit_code == 2
+    assert 'http(s) URL' in result.output
+
+
 # ------------------------------------------------------------- config
 
 
