@@ -99,7 +99,7 @@ def _validate_phone(ctx: click.Context, param: click.Parameter, value: str) -> s
 
 
 def _validate_url(ctx: click.Context, param: click.Parameter, value: str) -> str:
-    if not re.match(r'^https?://[^\s/]+', value or ''):
+    if not re.fullmatch(r'https?://\S+', value or ''):
         raise click.BadParameter('must be an http(s) URL, e.g. https://example.com/dlr')
     return value
 
