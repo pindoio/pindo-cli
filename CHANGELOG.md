@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v1.2.2 (2026-11-16)
+
+### Bug Fixes
+
+- **deps**: Bump click from 8.5.0 to 8.5.1 in the runtime group
+  ([`c10036e`](https://github.com/pindoio/pindo-cli/commit/c10036eecb6d25ca30dbd1d826953fe36660053e))
+
+
 ## v1.2.1 (2026-11-06)
 
 ### Bug Fixes
